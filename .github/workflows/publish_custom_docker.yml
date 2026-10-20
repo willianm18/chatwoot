@@ -87,8 +87,12 @@ jobs:
           platforms: linux/arm64
           push: ${{ steps.params.outputs.push == 'true' }}
           tags: ${{ steps.params.outputs.tags }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # Registry cache (not git-ref scoped, unlike type=gha): every tagged build reuses the
+          # previous one's layers, so code-only changes rebuild in minutes instead of ~18 min.
+          # cache-from reads the public package anonymously; cache-to writes only when logged in
+          # (the push=true path), so a push=false validation run still reads the cache.
+          cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE }}:buildcache,mode=max
 
       - name: Inspect published image
         if: steps.params.outputs.push == 'true'
