@@ -1,0 +1,95 @@
+# Publishes our fork's CE image to GitHub Container Registry.
+#
+# This is the fork's own publish pipeline (backlog item 6). It is NOT the inherited
+# publish_foss_docker.yml, which targets DockerHub chatwoot/chatwoot and must be
+# disabled in the Actions UI before tagging — our custom tags match its `v*` trigger.
+#
+# The VPS that runs the images is ARM, so we build linux/arm64 only (no amd64, no
+# QEMU) on GitHub's native arm64 runners, free for this public repo.
+
+name: Publish custom CE docker image
+
+on:
+  push:
+    tags:
+      - 'v*-custom.*'
+  workflow_dispatch:
+    inputs:
+      push:
+        description: 'Push the image to ghcr (false = build only, to validate the workflow)'
+        type: boolean
+        default: false
+
+env:
+  IMAGE: ghcr.io/willianm18/chatwoot
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04-arm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Decide whether this run publishes: a tag push always does; a manual run only
+      # when asked. The `latest-ce` tag is reserved for tag pushes (a real release).
+      - name: Resolve build parameters
+        id: params
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            PUSH=true
+          else
+            PUSH=${{ inputs.push }}
+          fi
+          REF="${{ github.ref_name }}"
+          SANITIZED_REF=$(echo "$REF" | sed 's/\//-/g')
+          TAGS="${IMAGE}:${SANITIZED_REF}-ce"
+          if [ "${{ github.event_name }}" = "push" ]; then
+            TAGS="${TAGS},${IMAGE}:latest-ce"
+          fi
+          {
+            echo "push=${PUSH}"
+            echo "tags=${TAGS}"
+          } >> "$GITHUB_OUTPUT"
+          echo "push=${PUSH} tags=${TAGS}"
+
+      # CE image: strip the enterprise overlay and stamp the edition, exactly as the
+      # upstream CE workflow does, so premium features stay off on this build.
+      - name: Strip enterprise code
+        run: |
+          rm -rf enterprise
+          rm -rf spec/enterprise
+
+      - name: Set Chatwoot edition
+        run: |
+          echo -en '\nENV CW_EDITION="ce"' >> docker/Dockerfile
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        if: steps.params.outputs.push == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          platforms: linux/arm64
+          push: ${{ steps.params.outputs.push == 'true' }}
+          tags: ${{ steps.params.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Inspect published image
+        if: steps.params.outputs.push == 'true'
+        run: docker buildx imagetools inspect "${IMAGE}:$(echo '${{ github.ref_name }}' | sed 's/\//-/g')-ce"
