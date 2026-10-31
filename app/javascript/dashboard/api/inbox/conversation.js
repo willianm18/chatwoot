@@ -80,6 +80,15 @@ class ConversationApi extends ApiClient {
     return axios.post(`${this.url}/${conversationId}/recheck_whatsapp_number`);
   }
 
+  // [fazer.ai fork] Forwards messages from this conversation to another contact on the same
+  // native WhatsApp inbox. Returns the target conversation's display_id.
+  forwardMessages(conversationId, { messageIds, targetContactId }) {
+    return axios.post(`${this.url}/${conversationId}/forwards`, {
+      message_ids: messageIds,
+      target_contact_id: targetContactId,
+    });
+  }
+
   togglePriority({ conversationId, priority }) {
     return axios.post(`${this.url}/${conversationId}/toggle_priority`, {
       priority,

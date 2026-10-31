@@ -30,6 +30,7 @@
     "MASKED_MESSAGE_WHATSAPP": "O WhatsApp não entrega códigos de verificação a dispositivos conectados. Esta mensagem só pode ser lida no celular pareado.",
     "WHATSAPP": "WhatsApp",
     "CONTEXT_MENU": {
+      "FORWARD": "Encaminhar",
       "EDIT": {
         "LABEL": "Editar",
         "TITLE": "Editar mensagem",
@@ -40,6 +41,16 @@
         "ERROR": "Falha ao editar mensagem",
         "EMPTY_CONTENT": "O conteúdo da mensagem não pode estar vazio"
       }
+    },
+    "FORWARD": {
+      "TITLE": "Encaminhar para…",
+      "SEARCH_PLACEHOLDER": "Buscar contatos",
+      "EMPTY": "Nenhum contato encontrado",
+      "SEND": "Encaminhar",
+      "SUCCESS": "Mensagem encaminhada",
+      "ERROR": "Não foi possível encaminhar a mensagem",
+      "NO_PHONE": "Este contato não tem telefone",
+      "ATTACHMENT": "Anexo"
     },
     "REACTIONS": {
       "ADD_REACTION": "Adicionar reação",

@@ -52,7 +52,9 @@ import WhatsappFlowResponseBubble from './bubbles/WhatsappFlowResponse.vue';
 
 import MessageError from './MessageError.vue';
 import ForwardEmailPanel from './forward/ForwardEmailPanel.vue';
+import ForwardWhatsappPanel from './forward/ForwardWhatsappPanel.vue';
 import ForwardedEmailBanner from './forward/ForwardedEmailBanner.vue';
+import { SESSION_PROVIDERS } from 'dashboard/helper/whatsappSession';
 import ContextMenu from 'dashboard/modules/conversations/components/MessageContextMenu.vue';
 import EmojiReactionPicker from './EmojiReactionPicker.vue';
 import ReactionDisplay from './ReactionDisplay.vue';
@@ -166,6 +168,8 @@ const showContextMenu = ref(false);
 const reactionPickerOpen = ref(false);
 const showForwardEmail = ref(false);
 const forwardEmailPosition = ref({});
+const showForwardWhatsapp = ref(false);
+const forwardWhatsappPosition = ref({});
 const { t } = useI18n();
 const route = useRoute();
 const inboxGetter = useMapGetter('inboxes/getInbox');
@@ -510,6 +514,16 @@ const contextMenuEnabledOptions = computed(() => {
       !props.private &&
       !isFailedOrProcessing &&
       !isMessageDeleted.value,
+    // [fazer.ai fork] Forward is offered only on native (session) WhatsApp inboxes, for a
+    // message that is not private, failed, deleted or a reaction, and has content to copy.
+    forward:
+      inbox.value?.channel_type === 'Channel::Whatsapp' &&
+      SESSION_PROVIDERS.includes(inbox.value?.provider) &&
+      !props.private &&
+      !props.contentAttributes?.isReaction &&
+      !isFailedOrProcessing &&
+      !isMessageDeleted.value &&
+      (hasText || hasAttachments),
     report:
       isOnChatwootCloud.value &&
       isCaptainMessage.value &&
@@ -631,6 +645,11 @@ function closeContextMenu() {
 function openForwardEmail() {
   forwardEmailPosition.value = { ...contextMenuPosition.value };
   showForwardEmail.value = true;
+}
+
+function openForwardWhatsapp() {
+  forwardWhatsappPosition.value = { ...contextMenuPosition.value };
+  showForwardWhatsapp.value = true;
 }
 
 function handleReplyTo() {
@@ -923,12 +942,19 @@ provideMessageContext({
         @close="closeContextMenu"
         @reply-to="handleReplyTo"
         @forward-email="openForwardEmail"
+        @forward="openForwardWhatsapp"
       />
       <ForwardEmailPanel
         v-if="showForwardEmail"
         :x="forwardEmailPosition.x"
         :y="forwardEmailPosition.y"
         @close="showForwardEmail = false"
+      />
+      <ForwardWhatsappPanel
+        v-if="showForwardWhatsapp"
+        :x="forwardWhatsappPosition.x"
+        :y="forwardWhatsappPosition.y"
+        @close="showForwardWhatsapp = false"
       />
     </div>
   </div>

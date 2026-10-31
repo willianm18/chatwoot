@@ -30,6 +30,7 @@
     "MASKED_MESSAGE_WHATSAPP": "WhatsApp does not deliver verification codes to linked devices. This message can only be read on the paired phone.",
     "WHATSAPP": "WhatsApp",
     "CONTEXT_MENU": {
+      "FORWARD": "Forward",
       "EDIT": {
         "LABEL": "Edit",
         "TITLE": "Edit message",
@@ -40,6 +41,16 @@
         "ERROR": "Failed to edit message",
         "EMPTY_CONTENT": "Message content cannot be empty"
       }
+    },
+    "FORWARD": {
+      "TITLE": "Forward to…",
+      "SEARCH_PLACEHOLDER": "Search contacts",
+      "EMPTY": "No contacts found",
+      "SEND": "Forward",
+      "SUCCESS": "Message forwarded",
+      "ERROR": "Could not forward the message",
+      "NO_PHONE": "This contact has no phone number",
+      "ATTACHMENT": "Attachment"
     },
     "REACTIONS": {
       "ADD_REACTION": "Add reaction",

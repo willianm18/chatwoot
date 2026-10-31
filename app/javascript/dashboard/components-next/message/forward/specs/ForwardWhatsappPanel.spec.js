@@ -1,0 +1,126 @@
+import { defineComponent, ref } from 'vue';
+import { mount, flushPromises } from '@vue/test-utils';
+import { createStore } from 'vuex';
+import { withFullI18n } from 'test-i18n';
+import { createContactSearcher } from 'dashboard/components-next/NewConversation/helpers/composeConversationHelper';
+import ForwardWhatsappPanel from '../ForwardWhatsappPanel.vue';
+import { provideMessageContext } from '../../provider.js';
+import { MESSAGE_TYPES } from '../../constants';
+
+vi.mock(
+  'dashboard/components-next/NewConversation/helpers/composeConversationHelper',
+  async importOriginal => ({
+    ...(await importOriginal()),
+    createContactSearcher: vi.fn(),
+  })
+);
+
+const alertSpy = vi.fn();
+vi.mock('dashboard/composables', () => ({
+  useAlert: (...args) => alertSpy(...args),
+}));
+
+withFullI18n();
+
+const stubs = {
+  ContextMenu: {
+    name: 'ContextMenu',
+    props: ['x', 'y', 'closeOnFocusOut'],
+    template: '<div><slot /></div>',
+  },
+  Avatar: {
+    name: 'Avatar',
+    props: ['name', 'src', 'size'],
+    template: '<div />',
+  },
+};
+
+const mountPanel = ({ message = {} } = {}) => {
+  const forwardMessages = vi.fn().mockResolvedValue({});
+  const store = createStore({ actions: { forwardMessages } });
+  const context = {
+    id: 501,
+    content: 'Comprovante',
+    attachments: [],
+    conversationId: 77,
+    ...message,
+  };
+  const Host = defineComponent({
+    components: { ForwardWhatsappPanel },
+    emits: ['close'],
+    setup() {
+      provideMessageContext(
+        Object.fromEntries(
+          Object.entries(context).map(([key, value]) => [key, ref(value)])
+        )
+      );
+    },
+    template:
+      '<ForwardWhatsappPanel :x="10" :y="20" @close="$emit(\'close\')" />',
+  });
+  const wrapper = mount(Host, {
+    attachTo: document.body,
+    global: { plugins: [store], stubs },
+  });
+  return { wrapper, forwardMessages };
+};
+
+describe('ForwardWhatsappPanel', () => {
+  let searchContacts;
+
+  beforeEach(() => {
+    alertSpy.mockClear();
+    searchContacts = vi.fn().mockResolvedValue([
+      { id: 99, name: 'Jane Doe', phoneNumber: '+5511999990000' },
+      { id: 100, name: 'No Phone', phoneNumber: null, email: 'np@x.com' },
+    ]);
+    createContactSearcher.mockReturnValue(searchContacts);
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
+
+  it('searches contacts when typing and renders results', async () => {
+    const { wrapper } = mountPanel();
+
+    await wrapper.find('input').setValue('jane');
+    await new Promise(resolve => setTimeout(resolve, 450));
+    await flushPromises();
+
+    expect(searchContacts).toHaveBeenCalledWith('jane');
+    expect(wrapper.text()).toContain('Jane Doe');
+  });
+
+  it('forwards to the chosen contact and closes', async () => {
+    const { wrapper, forwardMessages } = mountPanel();
+
+    await wrapper.find('input').setValue('jane');
+    await new Promise(resolve => setTimeout(resolve, 450));
+    await flushPromises();
+
+    await wrapper.findAll('button')[0].trigger('click');
+    await flushPromises();
+
+    expect(forwardMessages).toHaveBeenCalledWith(expect.anything(), {
+      conversationId: 77,
+      messageIds: [501],
+      targetContactId: 99,
+    });
+    expect(wrapper.emitted('close')).toBeTruthy();
+  });
+
+  it('refuses a contact without a phone number', async () => {
+    const { wrapper, forwardMessages } = mountPanel();
+
+    await wrapper.find('input').setValue('no');
+    await new Promise(resolve => setTimeout(resolve, 450));
+    await flushPromises();
+
+    await wrapper.findAll('button')[1].trigger('click');
+    await flushPromises();
+
+    expect(forwardMessages).not.toHaveBeenCalled();
+    expect(alertSpy).toHaveBeenCalled();
+  });
+});

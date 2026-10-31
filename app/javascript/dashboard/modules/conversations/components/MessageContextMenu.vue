@@ -50,7 +50,7 @@ export default {
       default: false,
     },
   },
-  emits: ['open', 'close', 'replyTo', 'forwardEmail'],
+  emits: ['open', 'close', 'replyTo', 'forwardEmail', 'forward'],
   setup() {
     const { getPlainText } = useMessageFormatter();
     const { isEditorHotKeyEnabled } = useUISettings();
@@ -161,6 +161,11 @@ export default {
     },
     handleForwardEmail() {
       this.$emit('forwardEmail');
+      this.handleClose();
+    },
+    // [fazer.ai fork] Forward a WhatsApp message to another contact.
+    handleForward() {
+      this.$emit('forward');
       this.handleClose();
     },
     openDeleteModal() {
@@ -319,6 +324,16 @@ export default {
           }"
           variant="icon"
           @click.stop="handleForwardEmail"
+        />
+        <!-- [fazer.ai fork] Forward a WhatsApp message to another contact -->
+        <MenuItem
+          v-if="enabledOptions['forward']"
+          :option="{
+            icon: 'arrow-forward',
+            label: $t('CONVERSATION.CONTEXT_MENU.FORWARD'),
+          }"
+          variant="icon"
+          @click.stop="handleForward"
         />
         <MenuItem
           v-if="enabledOptions['replyTo']"

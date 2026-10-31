@@ -447,6 +447,18 @@ const actions = {
   // new assignee themselves and nobody ever undid it, so a rejected assignment
   // (an inbox with `prevent_assignment_takeover` answers 409) left the agent
   // looking at their own name and believing they owned the conversation.
+  // [fazer.ai fork] Forwards messages from a native WhatsApp conversation to another contact.
+  // The server opens or reuses the contact's conversation and re-sends the content.
+  forwardMessages: async (
+    _,
+    { conversationId, messageIds, targetContactId }
+  ) => {
+    await ConversationApi.forwardMessages(conversationId, {
+      messageIds,
+      targetContactId,
+    });
+  },
+
   assignAgent: async (
     { commit, dispatch, getters },
     { conversationId, assignee, assigneeType }
