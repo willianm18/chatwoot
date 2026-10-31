@@ -165,6 +165,15 @@ fluxo da skill `sync-fork` não se aplicam como estão.
   overlay `fazer-ai/locale/<locale>/inboxMgmt.json`. A paleta é duplicada (concern ↔ const JS): manter em sincronia.
   Reverter = tirar o include/linha/param/bindings e dropar a coluna.
 
+- `app/services/message_templates/hook_execution_service.rb` — guard `return if message.reaction?` no
+  `perform`, para que uma reação (👍/❤️) não dispare out-of-office, greeting nem email-collect. O conector
+  nativo grava a reação como `Message` incoming com `content_attributes.is_reaction`, e o `perform` só
+  barrava `auto_reply_email?`/`voice_call?` — então uma reação fora do horário comercial disparava a mensagem
+  automática. Espelha os guards de reação que já existem em `Message` (`human_response?`, `valid_first_reply?`,
+  `set_waiting_since_on_incoming_message`). Spec de regressão em
+  `spec/services/message_templates/hook_execution_service_spec.rb`. Candidato a contribuição para a fazer.ai.
+  Reverter = tirar a linha do `perform`.
+
 ## Gotchas conhecidos do fork
 
 - Primeiro deploy numa base nova falha com `rails hook exited with status 1` (o `post_start` de branding roda antes

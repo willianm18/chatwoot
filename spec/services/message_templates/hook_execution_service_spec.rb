@@ -271,6 +271,26 @@ describe MessageTemplates::HookExecutionService do
     end
   end
 
+  context 'when the incoming message is a reaction' do
+    it 'does not call ::MessageTemplates::Template::OutOfOffice' do
+      contact = create(:contact)
+      conversation = create(:conversation, contact: contact)
+
+      conversation.inbox.update!(working_hours_enabled: true, out_of_office_message: 'We are out of office')
+      conversation.inbox.working_hours.today.update!(closed_all_day: true)
+
+      out_of_office_service = double
+      allow(MessageTemplates::Template::OutOfOffice).to receive(:new).and_return(out_of_office_service)
+      allow(out_of_office_service).to receive(:perform).and_return(true)
+
+      create(:message, conversation: conversation, account: conversation.account, message_type: :incoming,
+                       content: '👍', content_attributes: { is_reaction: true })
+
+      expect(MessageTemplates::Template::OutOfOffice).not_to have_received(:new)
+      expect(out_of_office_service).not_to have_received(:perform)
+    end
+  end
+
   context 'when an activity message is created on a conversation with a prior incoming message' do
     it 'does not call ::MessageTemplates::Template::Greeting' do
       contact = create(:contact, email: nil)

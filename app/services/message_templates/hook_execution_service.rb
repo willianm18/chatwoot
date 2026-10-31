@@ -6,6 +6,10 @@ class MessageTemplates::HookExecutionService
     return if message.auto_reply_email?
     # A call is not a chat message; greetings, out-of-office and bot replies would reach the caller as SMS.
     return if message.voice_call?
+    # A reaction (a 👍 or ❤️ toggled on a bubble) is an annotation, not a new turn; it must not
+    # fire greetings, out-of-office or email-collect. Mirrors the reaction guards already in Message
+    # (`human_response?`, `valid_first_reply?`, `set_waiting_since_on_incoming_message`).
+    return if message.reaction?
 
     trigger_templates
   end
