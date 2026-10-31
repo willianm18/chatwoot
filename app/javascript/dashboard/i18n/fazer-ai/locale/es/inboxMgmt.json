@@ -253,6 +253,11 @@
       "INBOUND_PHONE": {
         "DESCRIPTION": "Permite que los clientes llamen a este número y que la llamada suene para los agentes aquí. Si está desactivado, Chatwoot no suena y la llamada sigue sonando solo en el teléfono vinculado. Los agentes aún pueden hacer llamadas salientes."
       }
+    },
+    "CUSTOM_COLOR": {
+      "LABEL": "Color de la bandeja",
+      "DESCRIPTION": "Se usa para colorear el nombre de la bandeja en la lista de conversaciones y las burbujas de los mensajes enviados.",
+      "NONE": "Sin color"
     }
   }
 }
