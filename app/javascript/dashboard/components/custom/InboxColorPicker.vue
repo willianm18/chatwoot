@@ -2,7 +2,7 @@
 import { INBOX_COLOR_PALETTE } from 'dashboard/constants/customInboxColors';
 
 const props = defineProps({
-  modelValue: { type: String, default: null },
+  modelValue: { type: [String, null], default: null },
 });
 const emit = defineEmits(['update:modelValue']);
 
