@@ -30,8 +30,7 @@ RSpec.describe Custom::Messages::ForwardService do
       expect(target.inbox).to eq(inbox)
       forwarded = target.messages.outgoing.last
       expect(forwarded.content).to eq('Comprovante em anexo')
-      expect(forwarded.content_attributes['forwarded_message_id']).to eq(message.id)
-      expect(forwarded.forwarded?).to be(true)
+      expect(forwarded.content_attributes['forwarded']).to be(true)
     end
 
     it 'forwards attachments reusing the same blob (no re-upload)' do

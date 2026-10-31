@@ -101,7 +101,11 @@ module Custom
           message_type: 'outgoing',
           content: message.content,
           attachments: copyable_attachments(message).map { |attachment| attachment.file.blob },
-          content_attributes: { forwarded_message_id: message.id }
+          # Custom flag, not the upstream `forwarded_message_id`: that one is the EMAIL-forward
+          # mechanism (MessageBuilder#forwarded_attachments looks the id up in the TARGET
+          # conversation and #validate_forward requires an email inbox), so it breaks a
+          # cross-conversation WhatsApp forward. A future "forwarded" label reads this flag.
+          content_attributes: { forwarded: true }
         }.with_indifferent_access
       end
     end
