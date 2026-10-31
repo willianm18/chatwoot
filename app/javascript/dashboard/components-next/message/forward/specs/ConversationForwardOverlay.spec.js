@@ -9,6 +9,8 @@ const BAR = { name: 'ForwardSelectionBar' };
 const PANEL = { name: 'ForwardWhatsappPanel' };
 
 const stubs = {
+  // Render the bar's Teleport in place; a real teleport to body throws in jsdom on unmount.
+  teleport: true,
   ForwardSelectionBar: {
     name: 'ForwardSelectionBar',
     template:
