@@ -76,7 +76,15 @@ class Custom::Messages::ForwardService
     message.attachments.select { |attachment| FORWARDABLE_FILE_TYPES.include?(attachment.file_type) }
   end
 
+  # WhatsApp is one chat per contact, so the forward lands in the contact's existing
+  # conversation when there is one and only opens a new one otherwise. Match on the
+  # conversation directly rather than on a freshly derived source_id: BR numbers arrive
+  # with and without the 9th digit, so `phone_number.delete('+')` can miss the source_id
+  # the existing contact_inbox already holds and open a duplicate conversation.
   def resolve_target_conversation!
+    existing = target_contact.conversations.where(inbox: source_inbox).order(:created_at).last
+    return existing if existing
+
     contact_inbox = ::ContactInboxWithContactBuilder.new(
       inbox: source_inbox,
       contact_attributes: {
@@ -88,10 +96,7 @@ class Custom::Messages::ForwardService
     ).perform
     raise ArgumentError, 'Could not resolve a WhatsApp contact for the target' if contact_inbox.blank?
 
-    # WhatsApp is one chat per contact, so the forward lands in the contact's existing
-    # conversation when there is one and only opens a new one otherwise.
-    contact_inbox.conversations.order(:created_at).last ||
-      ::ConversationBuilder.new(params: {}, contact_inbox: contact_inbox).perform
+    ::ConversationBuilder.new(params: {}, contact_inbox: contact_inbox).perform
   end
 
   def forward(message, target_conversation)

@@ -58,6 +58,19 @@ RSpec.describe Custom::Messages::ForwardService do
       expect(target.id).to eq(existing_conversation.id)
     end
 
+    it 'reuses the existing conversation even when its source_id differs from the phone (BR 9th digit)' do
+      # The contact stores the full number, but the native connector opened the thread with the
+      # number WhatsApp delivered (no 9th digit), so the contact_inbox source_id does not match
+      # phone_number.delete('+'). Deriving a source_id here used to open a duplicate conversation.
+      existing_ci = create(:contact_inbox, contact: target_contact, inbox: inbox, source_id: '551199990000')
+      existing_conversation = create(:conversation, account: account, inbox: inbox, contact: target_contact, contact_inbox: existing_ci)
+      message = create(:message, account: account, inbox: inbox, conversation: source_conversation,
+                                 message_type: :incoming, content: 'oi')
+
+      expect { forward([message.id]) }.not_to change(Conversation, :count)
+      expect(forward([message.id]).id).to eq(existing_conversation.id)
+    end
+
     it 'preserves the order of the forwarded messages' do
       first = create(:message, account: account, inbox: inbox, conversation: source_conversation, message_type: :incoming, content: 'um')
       second = create(:message, account: account, inbox: inbox, conversation: source_conversation, message_type: :incoming, content: 'dois')

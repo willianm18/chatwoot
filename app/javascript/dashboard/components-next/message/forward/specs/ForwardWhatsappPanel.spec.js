@@ -2,17 +2,13 @@ import { defineComponent, ref } from 'vue';
 import { mount, flushPromises } from '@vue/test-utils';
 import { createStore } from 'vuex';
 import { withFullI18n } from 'test-i18n';
-import { createContactSearcher } from 'dashboard/components-next/NewConversation/helpers/composeConversationHelper';
+import { createForwardableContactSearcher } from '../forwardContactSearch.js';
 import ForwardWhatsappPanel from '../ForwardWhatsappPanel.vue';
 import { provideMessageContext } from '../../provider.js';
 
-vi.mock(
-  'dashboard/components-next/NewConversation/helpers/composeConversationHelper',
-  async importOriginal => ({
-    ...(await importOriginal()),
-    createContactSearcher: vi.fn(),
-  })
-);
+vi.mock('../forwardContactSearch.js', () => ({
+  createForwardableContactSearcher: vi.fn(),
+}));
 
 const alertSpy = vi.fn();
 vi.mock('dashboard/composables', () => ({
@@ -76,11 +72,24 @@ describe('ForwardWhatsappPanel', () => {
       { id: 99, name: 'Jane Doe', phoneNumber: '+5511999990000' },
       { id: 100, name: 'No Phone', phoneNumber: null, email: 'np@x.com' },
     ]);
-    createContactSearcher.mockReturnValue(searchContacts);
+    createForwardableContactSearcher.mockReturnValue(searchContacts);
   });
 
   afterEach(() => {
     document.body.innerHTML = '';
+  });
+
+  it('scopes the contact search to the source conversation', () => {
+    mountPanel();
+
+    expect(createForwardableContactSearcher).toHaveBeenCalledWith(77);
+  });
+
+  it('lets the panel close on outside click (no scroll-locking focus-out)', () => {
+    const { wrapper } = mountPanel();
+
+    const contextMenu = wrapper.findComponent({ name: 'ContextMenu' });
+    expect(contextMenu.props('closeOnFocusOut')).not.toBe(false);
   });
 
   it('searches contacts when typing and renders results', async () => {
