@@ -27,7 +27,17 @@ no origin.
   git rev-list --count main..<tag>   # depois do merge: tem que dar 0
   ```
 - **Releases nossas**: tag `<tag da fazer.ai>-custom.<N>` (ex.: `v4.18.0-fazer-ai.132-custom.1`), criada a partir do
-  `main`. É a tag que vai disparar o build da imagem (backlog item 6).
+  `main`. **Cortar a release é o que dispara o build e publica a imagem** `ghcr.io/willianm18/chatwoot` (workflow
+  "Publish custom CE docker image"); nunca `workflow_dispatch push=true`. Antes de cortar, rodar a skill
+  `release-user-notes` (notas en/pt-BR/es no corpo). Numerar pela tag (`git ls-remote --tags`), nunca por
+  `gh release list`; depois conferir que a tag aponta pro commit certo (`git rev-parse <tag>^{commit}`).
+- **Dois ambientes, imagem nova SEMPRE em homologação antes de produção.** Há um ambiente de HML e um de PRD
+  (domínios/containers no `CLAUDE.local.md`, fora do git). Toda imagem nova sobe primeiro em HML pra teste; só
+  depois em PRD. Rollback = reapontar o deploy pra a tag de release anterior (as tags antigas ficam no ghcr; nunca
+  apagar).
+- **Fluxo completo de entrega:** melhoria em branch `feat/|fix/` → PR no origin → **merge squash** → (quando
+  precisar) **sync do fazer.ai** por tag em branch própria, **merge commit (nunca squash)** → **cortar release**
+  `…-custom.N` → imagem → **HML** → **PRD**.
 - **Nunca** abrir PR, issue ou push na fazer.ai nem no chatwoot sem o usuário pedir. Nunca fazer push nem abrir PR
   no origin sem o usuário pedir.
 - Para manter os conflitos raros: código novo em arquivos novos (prefixo `custom`), traduções em arquivos próprios,
