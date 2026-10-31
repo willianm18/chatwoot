@@ -19,10 +19,16 @@ describe('isForwardableMessage', () => {
   it('rejects private, reaction, deleted, failed and in-progress messages', () => {
     expect(isForwardableMessage({ content: 'x', private: true })).toBe(false);
     expect(
-      isForwardableMessage({ content: 'x', contentAttributes: { isReaction: true } })
+      isForwardableMessage({
+        content: 'x',
+        contentAttributes: { isReaction: true },
+      })
     ).toBe(false);
     expect(
-      isForwardableMessage({ content: 'x', contentAttributes: { deleted: true } })
+      isForwardableMessage({
+        content: 'x',
+        contentAttributes: { deleted: true },
+      })
     ).toBe(false);
     expect(
       isForwardableMessage({ content: 'x', status: MESSAGE_STATUS.FAILED })

@@ -875,7 +875,9 @@ provideMessageContext({
           v-if="isForwardSelectionActive && isMessageForwardable"
           type="button"
           class="absolute inset-0 z-20 flex items-start p-1"
-          :class="orientation === ORIENTATION.RIGHT ? 'justify-start' : 'justify-end'"
+          :class="
+            orientation === ORIENTATION.RIGHT ? 'justify-start' : 'justify-end'
+          "
           :aria-pressed="isSelectedForForward"
           @click="toggleForwardSelection"
         >
