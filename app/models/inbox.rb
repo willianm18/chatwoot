@@ -49,6 +49,7 @@ class Inbox < ApplicationRecord
   include InboxAgentAvailability
   include InboxBrandedEmailLayoutable
   include InboxBotStatus
+  include Custom::InboxCustomColor
 
   # Not allowing characters:
   validates :name, presence: true
