@@ -207,6 +207,8 @@ Rails.application.routes.draw do
                   resource :reactions, only: [:create]
                 end
               end
+              # [fazer.ai fork] Forward message(s) to another contact on the same native WhatsApp inbox.
+              resources :forwards, only: [:create]
               resources :scheduled_messages, only: [:index, :create, :update, :destroy]
               resources :recurring_scheduled_messages, only: [:index, :create, :update, :destroy]
               resource :contact_info_request, only: [:show, :create]
