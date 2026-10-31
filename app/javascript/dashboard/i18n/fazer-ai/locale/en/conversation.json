@@ -51,7 +51,10 @@
       "SUCCESS": "Message forwarded",
       "ERROR": "Could not forward the message",
       "NO_PHONE": "This contact has no phone number",
-      "ATTACHMENT": "Attachment"
+      "ATTACHMENT": "Attachment",
+      "SELECTION_COUNT": "{count} selected",
+      "N_MESSAGES": "{count} messages",
+      "CANCEL": "Cancel"
     },
     "REACTIONS": {
       "ADD_REACTION": "Add reaction",

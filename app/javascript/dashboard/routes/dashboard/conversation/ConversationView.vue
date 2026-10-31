@@ -17,6 +17,8 @@ import { emitter } from 'shared/helpers/mitt';
 import { inboxBubbleStyle } from './inboxBubbleStyle';
 import SidepanelSwitch from 'dashboard/components-next/Conversation/SidepanelSwitch.vue';
 import ConversationSidebar from 'dashboard/components/widgets/conversation/ConversationSidebar.vue';
+// [fazer.ai fork] Conversation-level host for the WhatsApp multi-select forward (Phase 2).
+import ConversationForwardOverlay from 'dashboard/components-next/message/forward/ConversationForwardOverlay.vue';
 
 export default {
   components: {
@@ -25,6 +27,7 @@ export default {
     CmdBarConversationSnooze,
     SidepanelSwitch,
     ConversationSidebar,
+    ConversationForwardOverlay,
   },
   beforeRouteLeave(to, from, next) {
     // Clear selected state if navigating away from a conversation to a route without a conversationId to prevent stale data issues
@@ -282,5 +285,6 @@ export default {
     </ConversationBox>
     <ConversationSidebar v-if="shouldShowSidebar" :current-chat="currentChat" />
     <CmdBarConversationSnooze />
+    <ConversationForwardOverlay :current-chat="currentChat" />
   </section>
 </template>

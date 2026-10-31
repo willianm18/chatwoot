@@ -51,7 +51,10 @@
       "SUCCESS": "Mensagem encaminhada",
       "ERROR": "Não foi possível encaminhar a mensagem",
       "NO_PHONE": "Este contato não tem telefone",
-      "ATTACHMENT": "Anexo"
+      "ATTACHMENT": "Anexo",
+      "SELECTION_COUNT": "{count} selecionadas",
+      "N_MESSAGES": "{count} mensagens",
+      "CANCEL": "Cancelar"
     },
     "REACTIONS": {
       "ADD_REACTION": "Adicionar reação",

@@ -8,25 +8,26 @@ import { createForwardableContactSearcher } from './forwardContactSearch.js';
 
 import ContextMenu from 'dashboard/components/ui/ContextMenu.vue';
 import Avatar from 'next/avatar/Avatar.vue';
-import { useMessageContext } from '../provider.js';
 
-defineProps({
+// [fazer.ai fork] Phase 2 opens this panel at the conversation level from the selection bar,
+// so the message set comes in as props (a list of ids) rather than from the single-message
+// context. `previewText` is the source message's content when exactly one is selected.
+const props = defineProps({
   x: { type: Number, default: 0 },
   y: { type: Number, default: 0 },
+  conversationId: { type: Number, required: true },
+  messageIds: { type: Array, required: true },
+  previewText: { type: String, default: '' },
 });
 
-const emit = defineEmits(['close']);
+// `forwarded` fires only on a successful send, so the caller clears the selection then;
+// `close` also fires on dismiss, which must keep the selection for a retry.
+const emit = defineEmits(['close', 'forwarded']);
 
 const { t } = useI18n();
 const store = useStore();
-const {
-  id: messageId,
-  content,
-  attachments,
-  conversationId,
-} = useMessageContext();
 
-const searchContacts = createForwardableContactSearcher(conversationId.value);
+const searchContacts = createForwardableContactSearcher(props.conversationId);
 const contacts = ref([]);
 const isSearching = ref(false);
 const isForwarding = ref(false);
@@ -34,10 +35,11 @@ const query = ref('');
 
 // A short, agent-facing summary of what will be forwarded.
 const preview = computed(() => {
-  if (content.value) return content.value;
-  if (attachments.value?.length)
-    return `📎 ${t('CONVERSATION.FORWARD.ATTACHMENT')}`;
-  return '';
+  if (props.messageIds.length > 1)
+    return t('CONVERSATION.FORWARD.N_MESSAGES', {
+      count: props.messageIds.length,
+    });
+  return props.previewText;
 });
 
 const onSearch = debounce(async value => {
@@ -68,12 +70,12 @@ const selectContact = async contact => {
   isForwarding.value = true;
   try {
     await store.dispatch('forwardMessages', {
-      conversationId: conversationId.value,
-      messageIds: [messageId.value],
+      conversationId: props.conversationId,
+      messageIds: props.messageIds,
       targetContactId: contact.id,
     });
     useAlert(t('CONVERSATION.FORWARD.SUCCESS'));
-    emit('close');
+    emit('forwarded');
   } catch (error) {
     useAlert(t('CONVERSATION.FORWARD.ERROR'));
   } finally {

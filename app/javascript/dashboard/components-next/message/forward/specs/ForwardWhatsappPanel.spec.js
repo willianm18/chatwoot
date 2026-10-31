@@ -1,10 +1,8 @@
-import { defineComponent, ref } from 'vue';
 import { mount, flushPromises } from '@vue/test-utils';
 import { createStore } from 'vuex';
 import { withFullI18n } from 'test-i18n';
 import { createForwardableContactSearcher } from '../forwardContactSearch.js';
 import ForwardWhatsappPanel from '../ForwardWhatsappPanel.vue';
-import { provideMessageContext } from '../../provider.js';
 
 vi.mock('../forwardContactSearch.js', () => ({
   createForwardableContactSearcher: vi.fn(),
@@ -30,34 +28,19 @@ const stubs = {
   },
 };
 
-const mountPanel = ({ message = {} } = {}) => {
+const mountPanel = ({ props = {} } = {}) => {
   const forwardMessages = vi.fn().mockResolvedValue({});
   const store = createStore({ actions: { forwardMessages } });
-  const context = {
-    id: 501,
-    content: 'Comprovante',
-    attachments: [],
-    conversationId: 77,
-    ...message,
-  };
-  const Host = defineComponent({
-    components: { ForwardWhatsappPanel },
-    // Re-emitted from the inline string template below, which eslint-plugin-vue
-    // cannot statically parse, so the declaration looks unused to the linter.
-    // eslint-disable-next-line vue/no-unused-emit-declarations
-    emits: ['close'],
-    setup() {
-      provideMessageContext(
-        Object.fromEntries(
-          Object.entries(context).map(([key, value]) => [key, ref(value)])
-        )
-      );
-    },
-    template:
-      '<ForwardWhatsappPanel :x="10" :y="20" @close="$emit(\'close\')" />',
-  });
-  const wrapper = mount(Host, {
+  const wrapper = mount(ForwardWhatsappPanel, {
     attachTo: document.body,
+    props: {
+      x: 10,
+      y: 20,
+      conversationId: 77,
+      messageIds: [501],
+      previewText: 'Comprovante',
+      ...props,
+    },
     global: { plugins: [store], stubs },
   });
   return { wrapper, forwardMessages };
@@ -92,6 +75,12 @@ describe('ForwardWhatsappPanel', () => {
     expect(contextMenu.props('closeOnFocusOut')).not.toBe(false);
   });
 
+  it('summarizes the count when more than one message is selected', () => {
+    const { wrapper } = mountPanel({ props: { messageIds: [501, 502, 503] } });
+
+    expect(wrapper.text()).toContain('3');
+  });
+
   it('searches contacts when typing and renders results', async () => {
     const { wrapper } = mountPanel();
 
@@ -105,8 +94,10 @@ describe('ForwardWhatsappPanel', () => {
     expect(wrapper.text()).toContain('Jane Doe');
   });
 
-  it('forwards to the chosen contact and closes', async () => {
-    const { wrapper, forwardMessages } = mountPanel();
+  it('forwards the selected messages to the chosen contact', async () => {
+    const { wrapper, forwardMessages } = mountPanel({
+      props: { messageIds: [501, 502] },
+    });
 
     await wrapper.find('input').setValue('jane');
     await new Promise(resolve => {
@@ -119,10 +110,10 @@ describe('ForwardWhatsappPanel', () => {
 
     expect(forwardMessages).toHaveBeenCalledWith(expect.anything(), {
       conversationId: 77,
-      messageIds: [501],
+      messageIds: [501, 502],
       targetContactId: 99,
     });
-    expect(wrapper.emitted('close')).toBeTruthy();
+    expect(wrapper.emitted('forwarded')).toBeTruthy();
   });
 
   it('refuses a contact without a phone number', async () => {
