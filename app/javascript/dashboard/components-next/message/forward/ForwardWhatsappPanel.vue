@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import { debounce } from '@chatwoot/utils';
 import { useAlert } from 'dashboard/composables';
 import { useStore } from 'dashboard/composables/store';
-import { createContactSearcher } from 'dashboard/components-next/NewConversation/helpers/composeConversationHelper';
+import { createForwardableContactSearcher } from './forwardContactSearch.js';
 
 import ContextMenu from 'dashboard/components/ui/ContextMenu.vue';
 import Avatar from 'next/avatar/Avatar.vue';
@@ -26,7 +26,7 @@ const {
   conversationId,
 } = useMessageContext();
 
-const searchContacts = createContactSearcher();
+const searchContacts = createForwardableContactSearcher(conversationId.value);
 const contacts = ref([]);
 const isSearching = ref(false);
 const isForwarding = ref(false);
@@ -83,7 +83,7 @@ const selectContact = async contact => {
 </script>
 
 <template>
-  <ContextMenu :x="x" :y="y" :close-on-focus-out="false" @close="emit('close')">
+  <ContextMenu :x="x" :y="y" @close="emit('close')">
     <div
       class="flex flex-col w-80 max-h-[26rem] overflow-hidden bg-n-alpha-3 border border-n-strong shadow-sm backdrop-blur-[100px] rounded-xl cursor-default"
     >

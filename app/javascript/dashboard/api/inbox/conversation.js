@@ -89,6 +89,15 @@ class ConversationApi extends ApiClient {
     });
   }
 
+  // [fazer.ai fork] Contacts that can receive a forward from this conversation: only the
+  // ones with a thread on the source inbox's own WhatsApp number.
+  forwardableContacts(conversationId, query, { signal } = {}) {
+    return axios.get(`${this.url}/${conversationId}/forwards/contacts`, {
+      params: { q: query },
+      signal,
+    });
+  }
+
   togglePriority({ conversationId, priority }) {
     return axios.post(`${this.url}/${conversationId}/toggle_priority`, {
       priority,

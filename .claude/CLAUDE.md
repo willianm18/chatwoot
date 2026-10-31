@@ -121,7 +121,7 @@ fluxo da skill `sync-fork` não se aplicam como estão.
 - **Encaminhar mensagem (WhatsApp nativo)** — Fase 1 (uma mensagem pelo menu de contexto). Edições em arquivos
   do upstream, mínimas:
   - `config/routes.rb` — `resources :forwards, only: [:create]` aninhado na conversa (bloco
-    `scope module: :conversations`).
+    `scope module: :conversations`), com `get :contacts, on: :collection` (busca de contatos escopada à caixa).
   - `app/javascript/dashboard/modules/conversations/components/MessageContextMenu.vue` — emite `forward` e um
     `MenuItem` "Encaminhar" quando `enabledOptions['forward']`.
   - `app/javascript/dashboard/components-next/message/Message.vue` — gate `forward` em
@@ -129,9 +129,17 @@ fluxo da skill `sync-fork` não se aplicam como estão.
     `ForwardWhatsappPanel`.
   O resto é nosso (arquivos novos): `app/services/custom/messages/forward_service.rb`,
   `app/controllers/api/v1/accounts/conversations/forwards_controller.rb`,
-  `components-next/message/forward/ForwardWhatsappPanel.vue`, action `forwardMessages` na store/API, i18n no
-  overlay `fazer-ai/locale/<locale>/conversation.json`. Design/plano em `docs/superpowers/`.
+  `components-next/message/forward/ForwardWhatsappPanel.vue`,
+  `components-next/message/forward/forwardContactSearch.js`, action `forwardMessages` + método
+  `forwardableContacts` na store/API, i18n no overlay `fazer-ai/locale/<locale>/conversation.json`.
+  Design/plano em `docs/superpowers/`.
   Reverter = tirar a rota, o item do menu, o gate/painel e apagar os arquivos novos.
+  Ajustes pós-HML (2026-10-31): (1) `ForwardService#resolve_target_conversation!` reusa a conversa
+  existente do contato na caixa via `target_contact.conversations.where(inbox:)` em vez de derivar
+  `source_id` do telefone (o 9º dígito BR fazia criar conversa duplicada); (2) busca de contatos
+  escopada à caixa de origem (`forwards#contacts` + `forwardContactSearch.js`), só contatos com thread
+  naquela caixa — some a ambiguidade de homônimos de outras caixas; (3) `ForwardWhatsappPanel` sem
+  `close-on-focus-out="false"` → fecha ao clicar fora/`Esc` (antes travava a conversa pelo scroll-lock).
 - **Cor por caixa** (`custom_color` em `inboxes`) — cada caixa tem uma cor (paleta fixa de 10) que tinge a
   etiqueta do nome na lista/cabeçalho e os balões enviados. Edições mínimas no upstream:
   - `app/models/inbox.rb` — `include Custom::InboxCustomColor` (concern nosso com a paleta + validação).
