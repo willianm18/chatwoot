@@ -28,6 +28,7 @@
     "CHANGE_TEAM_FAILED": "Team change failed",
     "MESSAGE_DELETED_BY_CONTACT": "Deleted by the contact",
     "MASKED_MESSAGE_WHATSAPP": "WhatsApp does not deliver verification codes to linked devices. This message can only be read on the paired phone.",
+    "VIEW_ONCE_MESSAGE_WHATSAPP": "WhatsApp does not deliver view-once messages to linked devices. This message can only be opened on the paired phone.",
     "WHATSAPP": "WhatsApp",
     "CONTEXT_MENU": {
       "EDIT": {
@@ -92,6 +93,7 @@
       "BUTTON": "Load older messages",
       "HELP": "Asks the phone for what came before. It has to be awake to answer, and it stays quiet once it has already sent this stretch.",
       "REQUESTED": "Asked the phone for older messages. They appear here as it sends them.",
+      "REQUESTED_BY_DATE": "Asked the phone for older messages. Each one goes to the conversation from the date it was sent, so look for them in this contact's previous conversations.",
       "ERROR": "Could not ask for older messages. Try again in a moment.",
       "EXHAUSTED": "There is nothing older here. The rest of this conversation is only on the phone."
     },
