@@ -13,6 +13,7 @@ module Custom
       FORWARDABLE_FILE_TYPES = %w[image audio video file].freeze
 
       def perform
+        validate_source_conversation!
         validate_source_inbox!
         validate_target_contact!
         messages = load_forwardable_messages!
@@ -25,6 +26,12 @@ module Custom
 
       def source_inbox
         @source_inbox ||= conversation.inbox
+      end
+
+      # Phase 1 forwards 1:1 conversations only. A group source message can come from a LID
+      # participant with no phone, which the target resolution cannot address; gate it out.
+      def validate_source_conversation!
+        raise ArgumentError, 'Forwarding from a group conversation is not supported' if conversation.group_type_group?
       end
 
       def validate_source_inbox!
@@ -56,7 +63,7 @@ module Custom
       def forwardable?(message)
         return false if message.private?
         return false if message.reaction?
-        return false if message.content_attributes['deleted']
+        return false if message.deleted?
         return false if message.content_attributes['is_unsupported']
         return false unless message.incoming? || message.outgoing?
 
@@ -94,7 +101,7 @@ module Custom
           message_type: 'outgoing',
           content: message.content,
           attachments: copyable_attachments(message).map { |attachment| attachment.file.blob },
-          content_attributes: { forwarded: true }
+          content_attributes: { forwarded_message_id: message.id }
         }.with_indifferent_access
       end
     end

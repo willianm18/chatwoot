@@ -30,7 +30,8 @@ RSpec.describe Custom::Messages::ForwardService do
       expect(target.inbox).to eq(inbox)
       forwarded = target.messages.outgoing.last
       expect(forwarded.content).to eq('Comprovante em anexo')
-      expect(forwarded.content_attributes['forwarded']).to be(true)
+      expect(forwarded.content_attributes['forwarded_message_id']).to eq(message.id)
+      expect(forwarded.forwarded?).to be(true)
     end
 
     it 'forwards attachments reusing the same blob (no re-upload)' do
@@ -90,6 +91,17 @@ RSpec.describe Custom::Messages::ForwardService do
                                  message_type: :incoming, content: 'x', content_attributes: { deleted: true })
 
       expect { forward([message.id]) }.to raise_error(ArgumentError, /cannot be forwarded/)
+    end
+
+    it 'refuses forwarding from a group conversation' do
+      group_conversation = create(:conversation, account: account, inbox: inbox, group_type: :group)
+      message = create(:message, account: account, inbox: inbox, conversation: group_conversation,
+                                 message_type: :incoming, content: 'oi grupo')
+
+      expect do
+        described_class.new(conversation: group_conversation, message_ids: [message.id],
+                            target_contact: target_contact, user: agent).perform
+      end.to raise_error(ArgumentError, /group/)
     end
   end
 end
