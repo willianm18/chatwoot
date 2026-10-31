@@ -973,6 +973,16 @@ provideMessageContext({
 
 .has-inbox-bubble-color .agent-bubble {
   background: var(--inbox-send-bubble) !important;
+}
+
+/* The inbox palette is all dark colors, so every bit of text in the sent bubble must be
+   light. Upstream's agent bubble assumes a light background and sets dark text tokens
+   (text-n-slate-12 / text-n-slate-11, and the prose body color) on the content and meta
+   children; those override the bubble's own color. In dark theme those tokens are already
+   light so it looked fine, but in light theme they are near-black and unreadable on the
+   colored bubble — so force white on the bubble and all its descendants. */
+.has-inbox-bubble-color .agent-bubble,
+.has-inbox-bubble-color .agent-bubble * {
   color: #fff !important;
 }
 </style>
