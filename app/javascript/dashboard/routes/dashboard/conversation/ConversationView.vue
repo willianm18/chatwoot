@@ -14,6 +14,7 @@ import wootConstants from 'dashboard/constants/globals';
 import { BUS_EVENTS } from 'shared/constants/busEvents';
 import CmdBarConversationSnooze from 'dashboard/routes/dashboard/commands/CmdBarConversationSnooze.vue';
 import { emitter } from 'shared/helpers/mitt';
+import { inboxBubbleStyle } from './inboxBubbleStyle';
 import SidepanelSwitch from 'dashboard/components-next/Conversation/SidepanelSwitch.vue';
 import ConversationSidebar from 'dashboard/components/widgets/conversation/ConversationSidebar.vue';
 
@@ -103,6 +104,12 @@ export default {
 
       const { is_contact_sidebar_open: isContactSidebarOpen } = this.uiSettings;
       return isContactSidebarOpen;
+    },
+    currentInboxBubble() {
+      const inbox = this.$store.getters['inboxes/getInbox'](
+        this.currentChat?.inbox_id
+      );
+      return inboxBubbleStyle(inbox?.custom_color);
     },
   },
   watch: {
@@ -251,7 +258,11 @@ export default {
 </script>
 
 <template>
-  <section class="flex w-full h-full min-w-0">
+  <section
+    class="flex w-full h-full min-w-0"
+    :class="currentInboxBubble.class"
+    :style="currentInboxBubble.style"
+  >
     <ChatList
       :show-conversation-list="showConversationList"
       :conversation-inbox="inboxId"

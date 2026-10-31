@@ -427,6 +427,26 @@ RSpec.describe Inbox do
     end
   end
 
+  describe 'custom_color validation' do
+    let(:inbox) { create(:inbox) }
+
+    it 'accepts nil' do
+      inbox.custom_color = nil
+      expect(inbox).to be_valid
+    end
+
+    it 'accepts a color from the palette' do
+      inbox.custom_color = Custom::InboxCustomColor::PALETTE.first
+      expect(inbox).to be_valid
+    end
+
+    it 'rejects a color outside the palette' do
+      inbox.custom_color = '#123456'
+      expect(inbox).not_to be_valid
+      expect(inbox.errors[:custom_color]).to be_present
+    end
+  end
+
   describe '#webhook_data' do
     it 'ships the inbox updated_at as sub-second float seconds that move on a rename' do
       inbox = create(:inbox, name: 'Inbox A')

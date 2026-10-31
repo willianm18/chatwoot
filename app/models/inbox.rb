@@ -51,6 +51,7 @@ class Inbox < ApplicationRecord
   include InboxAgentAvailability
   include InboxBrandedEmailLayoutable
   include InboxBotStatus
+  include Custom::InboxCustomColor
   include InboxReopenOwner
 
   # Not allowing characters:

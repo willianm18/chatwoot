@@ -265,6 +265,11 @@
       "INBOUND_PHONE": {
         "DESCRIPTION": "Let customers call this number and ring the agents here. When disabled, Chatwoot does not ring and calls keep ringing on the paired phone only. Agents can still place outbound calls."
       }
+    },
+    "CUSTOM_COLOR": {
+      "LABEL": "Inbox color",
+      "DESCRIPTION": "Used to tint the inbox name in the conversation list and the sent message bubbles.",
+      "NONE": "No color"
     }
   }
 }

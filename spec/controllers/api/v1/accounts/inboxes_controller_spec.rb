@@ -377,6 +377,16 @@ RSpec.describe 'Inboxes API', type: :request do
 
         expect(data[:hmac_token]).to be_nil
       end
+
+      it 'serializes custom_color' do
+        inbox.update!(custom_color: Custom::InboxCustomColor::PALETTE.first)
+
+        get "/api/v1/accounts/#{account.id}/inboxes/#{inbox.id}",
+            headers: admin.create_new_auth_token, as: :json
+
+        expect(response).to have_http_status(:success)
+        expect(response.parsed_body['custom_color']).to eq(Custom::InboxCustomColor::PALETTE.first)
+      end
     end
   end
 
@@ -702,6 +712,23 @@ RSpec.describe 'Inboxes API', type: :request do
           expect(response).to have_http_status(:unprocessable_entity), "accepted #{value.inspect}"
           expect(inbox.reload.drop_assignee_outside_team_on_reopen).to be(true)
         end
+      end
+
+      it 'updates custom_color from the palette' do
+        patch "/api/v1/accounts/#{account.id}/inboxes/#{inbox.id}",
+              params: { custom_color: Custom::InboxCustomColor::PALETTE.last },
+              headers: admin.create_new_auth_token, as: :json
+
+        expect(response).to have_http_status(:success)
+        expect(inbox.reload.custom_color).to eq(Custom::InboxCustomColor::PALETTE.last)
+      end
+
+      it 'rejects a custom_color outside the palette' do
+        patch "/api/v1/accounts/#{account.id}/inboxes/#{inbox.id}",
+              params: { custom_color: '#123456' },
+              headers: admin.create_new_auth_token, as: :json
+
+        expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it 'sets who owns a reopened conversation and exposes it' do

@@ -7,6 +7,9 @@
 # Ignore bundler config.
 /.bundle
 
+# Ignore the brainstorming visual-companion runtime dir (local only).
+/.superpowers/
+
 # Ignore the default SQLite database.
 /db/*.sqlite3
 /db/*.sqlite3-journal
@@ -96,6 +99,9 @@ yarn-debug.log*
 .cursor
 .codex/
 CLAUDE.local.md
+
+# Local-only design/planning docs for this fork (not for the public repo)
+docs-local/
 
 # Histoire deployment
 .netlify

@@ -265,6 +265,11 @@
       "INBOUND_PHONE": {
         "DESCRIPTION": "Permita que os clientes liguem para este número e que a chamada toque para os atendentes aqui. Quando desativado, o Chatwoot não toca e a chamada continua tocando só no celular pareado. Os atendentes ainda podem fazer chamadas de saída."
       }
+    },
+    "CUSTOM_COLOR": {
+      "LABEL": "Cor da caixa",
+      "DESCRIPTION": "Usada para colorir o nome da caixa na lista de conversas e os balões das mensagens enviadas.",
+      "NONE": "Sem cor"
     }
   }
 }

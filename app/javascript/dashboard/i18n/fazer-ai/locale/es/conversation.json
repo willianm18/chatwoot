@@ -31,6 +31,7 @@
     "VIEW_ONCE_MESSAGE_WHATSAPP": "WhatsApp no entrega mensajes de visualización única a los dispositivos vinculados. Este mensaje solo se puede abrir en el teléfono vinculado.",
     "WHATSAPP": "WhatsApp",
     "CONTEXT_MENU": {
+      "FORWARD": "Reenviar",
       "EDIT": {
         "LABEL": "Editar",
         "TITLE": "Editar mensaje",
@@ -41,6 +42,16 @@
         "ERROR": "No se pudo editar el mensaje",
         "EMPTY_CONTENT": "El contenido del mensaje no puede estar vacío"
       }
+    },
+    "FORWARD": {
+      "TITLE": "Reenviar a…",
+      "SEARCH_PLACEHOLDER": "Buscar contactos",
+      "EMPTY": "No se encontraron contactos",
+      "SEND": "Reenviar",
+      "SUCCESS": "Mensaje reenviado",
+      "ERROR": "No se pudo reenviar el mensaje",
+      "NO_PHONE": "Este contacto no tiene teléfono",
+      "ATTACHMENT": "Adjunto"
     },
     "REACTIONS": {
       "ADD_REACTION": "Añadir reacción",

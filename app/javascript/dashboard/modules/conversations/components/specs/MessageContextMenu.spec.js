@@ -60,4 +60,22 @@ describe('MessageContextMenu', () => {
     expect(menuItem(wrapper, 'Forward email')).toBeUndefined();
     expect(menuItem(wrapper, 'Copy')).toBeDefined();
   });
+
+  it('offers the WhatsApp forward option and emits it on click', async () => {
+    const wrapper = mountMenu({ forward: true });
+
+    const item = menuItem(wrapper, 'Forward');
+    expect(item).toBeDefined();
+
+    await item.trigger('click');
+
+    expect(wrapper.emitted('forward')).toHaveLength(1);
+    expect(wrapper.emitted('close')).toHaveLength(1);
+  });
+
+  it('hides the WhatsApp forward option when it is not enabled', () => {
+    const wrapper = mountMenu({ copy: true });
+
+    expect(menuItem(wrapper, 'Forward')).toBeUndefined();
+  });
 });
