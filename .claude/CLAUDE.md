@@ -122,6 +122,19 @@ fluxo da skill `sync-fork` não se aplicam como estão.
   `components-next/message/forward/ForwardWhatsappPanel.vue`, action `forwardMessages` na store/API, i18n no
   overlay `fazer-ai/locale/<locale>/conversation.json`. Design/plano em `docs/superpowers/`.
   Reverter = tirar a rota, o item do menu, o gate/painel e apagar os arquivos novos.
+- **Cor por caixa** (`custom_color` em `inboxes`) — cada caixa tem uma cor (paleta fixa de 10) que tinge a
+  etiqueta do nome na lista/cabeçalho e os balões enviados. Edições mínimas no upstream:
+  - `app/models/inbox.rb` — `include Custom::InboxCustomColor` (concern nosso com a paleta + validação).
+  - `app/views/api/v1/models/_inbox.json.jbuilder` — `json.custom_color`.
+  - `app/controllers/api/v1/accounts/inboxes_controller.rb` — `:custom_color` em `inbox_attributes`.
+  - `routes/dashboard/settings/inbox/Settings.vue` — seletor na aba geral.
+  - `components/widgets/InboxName.vue` + `components-next/Conversation/InboxName.vue` — etiqueta tingida.
+  - `components-next/message/bubbles/Base.vue` (marcador `agent-bubble`) + `components-next/message/Message.vue`
+    (regra CSS) + `routes/dashboard/conversation/ConversationView.vue` (variável CSS `--inbox-send-bubble` no root).
+  O resto é nosso: `app/models/concerns/custom/inbox_custom_color.rb`, `dashboard/constants/customInboxColors.js`,
+  `dashboard/components/custom/InboxColorPicker.vue`, `routes/dashboard/conversation/inboxBubbleStyle.js`, i18n no
+  overlay `fazer-ai/locale/<locale>/inboxMgmt.json`. A paleta é duplicada (concern ↔ const JS): manter em sincronia.
+  Reverter = tirar o include/linha/param/bindings e dropar a coluna.
 
 ## Gotchas conhecidos do fork
 
