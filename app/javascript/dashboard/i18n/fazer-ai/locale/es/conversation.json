@@ -28,6 +28,7 @@
     "CHANGE_TEAM_FAILED": "No se pudo cambiar el equipo",
     "MESSAGE_DELETED_BY_CONTACT": "Eliminado por el contacto",
     "MASKED_MESSAGE_WHATSAPP": "WhatsApp no entrega códigos de verificación a los dispositivos vinculados. Este mensaje solo se puede leer en el teléfono vinculado.",
+    "VIEW_ONCE_MESSAGE_WHATSAPP": "WhatsApp no entrega mensajes de visualización única a los dispositivos vinculados. Este mensaje solo se puede abrir en el teléfono vinculado.",
     "WHATSAPP": "WhatsApp",
     "CONTEXT_MENU": {
       "FORWARD": "Reenviar",
@@ -103,6 +104,7 @@
       "BUTTON": "Cargar mensajes más antiguos",
       "HELP": "Pide al teléfono lo que vino antes. Tiene que estar encendido para responder, y se queda en silencio cuando ya envió este tramo.",
       "REQUESTED": "Le pedimos al teléfono los mensajes más antiguos. Aparecen aquí a medida que los envía.",
+      "REQUESTED_BY_DATE": "Le pedimos al teléfono los mensajes más antiguos. Cada uno va a la conversación de la fecha en que se envió, así que búscalos en las conversaciones anteriores de este contacto.",
       "ERROR": "No se pudieron pedir los mensajes más antiguos. Inténtalo de nuevo en un momento.",
       "EXHAUSTED": "No hay nada más antiguo aquí. El resto de esta conversación está solo en el teléfono."
     },

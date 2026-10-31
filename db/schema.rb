@@ -1356,6 +1356,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_31_135441) do
     t.boolean "prevent_assignment_takeover", default: false, null: false
     t.boolean "drop_assignee_outside_team_on_reopen", default: false, null: false
     t.string "custom_color"
+    t.integer "reopen_owner", default: 0, null: false
+    t.integer "reopen_owner_window_hours"
     t.index ["account_id"], name: "index_inboxes_on_account_id"
     t.index ["channel_id", "channel_type"], name: "index_inboxes_on_channel_id_and_channel_type"
     t.index ["portal_id"], name: "index_inboxes_on_portal_id"
