@@ -52,6 +52,7 @@ import { LOCAL_STORAGE_KEYS } from 'dashboard/constants/localStorage';
 import { LocalStorage } from 'shared/helpers/localStorage';
 import Editor from 'dashboard/components-next/Editor/Editor.vue';
 import ColorPicker from 'dashboard/components-next/colorpicker/ColorPicker.vue';
+import InboxColorPicker from 'dashboard/components/custom/InboxColorPicker.vue';
 import SelectInput from 'dashboard/components-next/select/Select.vue';
 import Widget from 'dashboard/modules/widget-preview/components/Widget.vue';
 import AccessToken from 'dashboard/routes/dashboard/settings/profile/AccessToken.vue';
@@ -90,6 +91,7 @@ export default {
     Editor,
     Avatar,
     ColorPicker,
+    InboxColorPicker,
     SelectInput,
     AccountHealth,
     TwilioHealth,
@@ -125,6 +127,7 @@ export default {
       allowMessagesAfterResolved: true,
       continuityViaEmail: true,
       selectedInboxName: '',
+      selectedCustomColor: null,
       channelWebsiteUrl: '',
       webhookUrl: '',
       channelWelcomeTitle: '',
@@ -637,6 +640,7 @@ export default {
 
       this.avatarUrl = this.inbox.avatar_url;
       this.selectedInboxName = this.inbox.name;
+      this.selectedCustomColor = this.inbox.custom_color || null;
       this.webhookUrl = this.inbox.webhook_url;
       this.greetingEnabled = this.inbox.greeting_enabled || false;
       this.greetingMessage = this.inbox.greeting_message || '';
@@ -813,6 +817,7 @@ export default {
           lock_to_single_conversation: this.locktoSingleConversation,
           sender_name_type: this.senderNameType,
           business_name: this.businessName || null,
+          custom_color: this.selectedCustomColor,
           channel: {
             widget_color: this.inbox.widget_color,
             website_url: this.channelWebsiteUrl,
@@ -1074,6 +1079,14 @@ export default {
                 "
                 @blur="v$.selectedInboxName.$touch"
               />
+            </SettingsFieldSection>
+            <SettingsFieldSection
+              :label="$t('INBOX_MGMT.CUSTOM_COLOR.LABEL')"
+            >
+              <p class="mb-2 text-label-small text-n-slate-11">
+                {{ $t('INBOX_MGMT.CUSTOM_COLOR.DESCRIPTION') }}
+              </p>
+              <InboxColorPicker v-model="selectedCustomColor" />
             </SettingsFieldSection>
             <SettingsFieldSection
               v-if="isAPIInbox"
