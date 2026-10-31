@@ -970,4 +970,9 @@ provideMessageContext({
     @apply ltr:rounded-tr-sm rtl:rounded-tl-sm;
   }
 }
+
+.has-inbox-bubble-color .agent-bubble {
+  background: var(--inbox-send-bubble) !important;
+  color: #fff !important;
+}
 </style>
