@@ -1,7 +1,7 @@
 <script setup>
 import { INBOX_COLOR_PALETTE } from 'dashboard/constants/customInboxColors';
 
-const props = defineProps({
+defineProps({
   modelValue: { type: [String, null], default: null },
 });
 const emit = defineEmits(['update:modelValue']);
@@ -19,7 +19,9 @@ const select = color => emit('update:modelValue', color);
       type="button"
       data-testid="color-swatch"
       class="size-6 rounded-full border border-n-weak transition-transform hover:scale-110"
-      :class="modelValue === color ? 'ring-2 ring-offset-2 ring-n-slate-11' : ''"
+      :class="
+        modelValue === color ? 'ring-2 ring-offset-2 ring-n-slate-11' : ''
+      "
       :style="{ backgroundColor: color }"
       :title="color"
       @click="select(color)"

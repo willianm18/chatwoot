@@ -19,8 +19,12 @@ const emit = defineEmits(['close']);
 
 const { t } = useI18n();
 const store = useStore();
-const { id: messageId, content, attachments, conversationId } =
-  useMessageContext();
+const {
+  id: messageId,
+  content,
+  attachments,
+  conversationId,
+} = useMessageContext();
 
 const searchContacts = createContactSearcher();
 const contacts = ref([]);
@@ -31,7 +35,8 @@ const query = ref('');
 // A short, agent-facing summary of what will be forwarded.
 const preview = computed(() => {
   if (content.value) return content.value;
-  if (attachments.value?.length) return `📎 ${t('CONVERSATION.FORWARD.ATTACHMENT')}`;
+  if (attachments.value?.length)
+    return `📎 ${t('CONVERSATION.FORWARD.ATTACHMENT')}`;
   return '';
 });
 
@@ -101,7 +106,9 @@ const selectContact = async contact => {
       </div>
       <div class="flex-1 overflow-y-auto py-1">
         <p
-          v-if="!isSearching && query.trim().length >= 2 && contacts.length === 0"
+          v-if="
+            !isSearching && query.trim().length >= 2 && contacts.length === 0
+          "
           class="px-4 py-3 text-xs text-n-slate-11"
         >
           {{ t('CONVERSATION.FORWARD.EMPTY') }}
@@ -116,7 +123,9 @@ const selectContact = async contact => {
         >
           <Avatar :name="contact.name" :src="contact.thumbnail" :size="24" />
           <span class="flex flex-col min-w-0">
-            <span class="text-sm text-n-slate-12 truncate">{{ contact.name }}</span>
+            <span class="text-sm text-n-slate-12 truncate">{{
+              contact.name
+            }}</span>
             <span class="text-xs text-n-slate-11 truncate">
               {{ contact.phoneNumber || contact.email }}
             </span>

@@ -15,9 +15,7 @@ defineProps({
     <span
       class="truncate text-body-main"
       :class="
-        inbox.custom_color
-          ? 'px-1.5 py-0.5 rounded-full'
-          : 'text-n-slate-11'
+        inbox.custom_color ? 'px-1.5 py-0.5 rounded-full' : 'text-n-slate-11'
       "
       :style="
         inbox.custom_color

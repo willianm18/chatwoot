@@ -5,7 +5,6 @@ import { withFullI18n } from 'test-i18n';
 import { createContactSearcher } from 'dashboard/components-next/NewConversation/helpers/composeConversationHelper';
 import ForwardWhatsappPanel from '../ForwardWhatsappPanel.vue';
 import { provideMessageContext } from '../../provider.js';
-import { MESSAGE_TYPES } from '../../constants';
 
 vi.mock(
   'dashboard/components-next/NewConversation/helpers/composeConversationHelper',
@@ -47,6 +46,9 @@ const mountPanel = ({ message = {} } = {}) => {
   };
   const Host = defineComponent({
     components: { ForwardWhatsappPanel },
+    // Re-emitted from the inline string template below, which eslint-plugin-vue
+    // cannot statically parse, so the declaration looks unused to the linter.
+    // eslint-disable-next-line vue/no-unused-emit-declarations
     emits: ['close'],
     setup() {
       provideMessageContext(
@@ -85,7 +87,9 @@ describe('ForwardWhatsappPanel', () => {
     const { wrapper } = mountPanel();
 
     await wrapper.find('input').setValue('jane');
-    await new Promise(resolve => setTimeout(resolve, 450));
+    await new Promise(resolve => {
+      setTimeout(resolve, 450);
+    });
     await flushPromises();
 
     expect(searchContacts).toHaveBeenCalledWith('jane');
@@ -96,7 +100,9 @@ describe('ForwardWhatsappPanel', () => {
     const { wrapper, forwardMessages } = mountPanel();
 
     await wrapper.find('input').setValue('jane');
-    await new Promise(resolve => setTimeout(resolve, 450));
+    await new Promise(resolve => {
+      setTimeout(resolve, 450);
+    });
     await flushPromises();
 
     await wrapper.findAll('button')[0].trigger('click');
@@ -114,7 +120,9 @@ describe('ForwardWhatsappPanel', () => {
     const { wrapper, forwardMessages } = mountPanel();
 
     await wrapper.find('input').setValue('no');
-    await new Promise(resolve => setTimeout(resolve, 450));
+    await new Promise(resolve => {
+      setTimeout(resolve, 450);
+    });
     await flushPromises();
 
     await wrapper.findAll('button')[1].trigger('click');

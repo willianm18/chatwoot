@@ -1080,9 +1080,7 @@ export default {
                 @blur="v$.selectedInboxName.$touch"
               />
             </SettingsFieldSection>
-            <SettingsFieldSection
-              :label="$t('INBOX_MGMT.CUSTOM_COLOR.LABEL')"
-            >
+            <SettingsFieldSection :label="$t('INBOX_MGMT.CUSTOM_COLOR.LABEL')">
               <p class="mb-2 text-label-small text-n-slate-11">
                 {{ $t('INBOX_MGMT.CUSTOM_COLOR.DESCRIPTION') }}
               </p>
