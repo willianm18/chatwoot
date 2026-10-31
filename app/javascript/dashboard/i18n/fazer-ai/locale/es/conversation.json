@@ -51,7 +51,10 @@
       "SUCCESS": "Mensaje reenviado",
       "ERROR": "No se pudo reenviar el mensaje",
       "NO_PHONE": "Este contacto no tiene teléfono",
-      "ATTACHMENT": "Adjunto"
+      "ATTACHMENT": "Adjunto",
+      "SELECTION_COUNT": "{count} seleccionados",
+      "N_MESSAGES": "{count} mensajes",
+      "CANCEL": "Cancelar"
     },
     "REACTIONS": {
       "ADD_REACTION": "Añadir reacción",

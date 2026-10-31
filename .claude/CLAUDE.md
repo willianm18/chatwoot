@@ -140,6 +140,17 @@ fluxo da skill `sync-fork` não se aplicam como estão.
   escopada à caixa de origem (`forwards#contacts` + `forwardContactSearch.js`), só contatos com thread
   naquela caixa — some a ambiguidade de homônimos de outras caixas; (3) `ForwardWhatsappPanel` sem
   `close-on-focus-out="false"` → fecha ao clicar fora/`Esc` (antes travava a conversa pelo scroll-lock).
+  Fase 2 — seleção múltipla estilo WhatsApp (2026-10-31): "Encaminhar" no menu **entra no modo de
+  seleção** (não abre o painel direto); bolhas encaminháveis ganham checkbox; barra de ação no nível da
+  conversa com contagem + Encaminhar + Cancelar (`Esc`); o painel sobe para a conversa e recebe
+  `messageIds`/`conversationId` por props (deixou de usar `useMessageContext`). Arquivos novos nossos:
+  `components-next/message/forward/useForwardSelection.js`, `isForwardableMessage.js`,
+  `ForwardSelectionBar.vue`, `ConversationForwardOverlay.vue`. Edições upstream mínimas adicionais:
+  `components-next/message/Message.vue` (handler do `forward` → `start`; checkbox na bolha; gate reusa
+  `isForwardableMessage`; painel removido daqui) e
+  `routes/dashboard/conversation/ConversationView.vue` (render do `ConversationForwardOverlay`). i18n das
+  chaves `FORWARD.SELECTION_COUNT/N_MESSAGES/CANCEL` no overlay. Design em
+  `docs/superpowers/specs/2026-10-31-forward-message-phase2-design.md`.
 - **Cor por caixa** (`custom_color` em `inboxes`) — cada caixa tem uma cor (paleta fixa de 10) que tinge a
   etiqueta do nome na lista/cabeçalho e os balões enviados. Edições mínimas no upstream:
   - `app/models/inbox.rb` — `include Custom::InboxCustomColor` (concern nosso com a paleta + validação).

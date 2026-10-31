@@ -52,8 +52,9 @@ import WhatsappFlowResponseBubble from './bubbles/WhatsappFlowResponse.vue';
 
 import MessageError from './MessageError.vue';
 import ForwardEmailPanel from './forward/ForwardEmailPanel.vue';
-import ForwardWhatsappPanel from './forward/ForwardWhatsappPanel.vue';
 import ForwardedEmailBanner from './forward/ForwardedEmailBanner.vue';
+import { useForwardSelection } from './forward/useForwardSelection.js';
+import { isForwardableMessage } from './forward/isForwardableMessage.js';
 import { SESSION_PROVIDERS } from 'dashboard/helper/whatsappSession';
 import ContextMenu from 'dashboard/modules/conversations/components/MessageContextMenu.vue';
 import EmojiReactionPicker from './EmojiReactionPicker.vue';
@@ -168,13 +169,36 @@ const showContextMenu = ref(false);
 const reactionPickerOpen = ref(false);
 const showForwardEmail = ref(false);
 const forwardEmailPosition = ref({});
-const showForwardWhatsapp = ref(false);
-const forwardWhatsappPosition = ref({});
 const { t } = useI18n();
 const route = useRoute();
 const inboxGetter = useMapGetter('inboxes/getInbox');
 const inbox = computed(() => inboxGetter.value(props.inboxId) || {});
 const router = useRouter();
+
+// [fazer.ai fork] Multi-select forward (Phase 2). "Forward" from the context menu enters a
+// selection mode scoped to this conversation; forwardable bubbles then show a checkbox.
+const forwardSelection = useForwardSelection();
+const isMessageForwardable = computed(() =>
+  isForwardableMessage({
+    private: props.private,
+    status: props.status,
+    content: props.content,
+    attachments: props.attachments,
+    contentAttributes: props.contentAttributes,
+  })
+);
+const isForwardSelectionActive = computed(() =>
+  forwardSelection.isActiveFor(props.conversationId)
+);
+const isSelectedForForward = computed(() =>
+  forwardSelection.isSelected(props.id)
+);
+function startForwardSelection() {
+  forwardSelection.start(props.id, props.conversationId);
+}
+function toggleForwardSelection() {
+  if (isMessageForwardable.value) forwardSelection.toggle(props.id);
+}
 const isOnChatwootCloud = useMapGetter('globalConfig/isOnChatwootCloud');
 const { replaceInstallationName } = useBranding();
 const { accountId: currentAccountId, currentAccount } = useAccount();
@@ -514,16 +538,12 @@ const contextMenuEnabledOptions = computed(() => {
       !props.private &&
       !isFailedOrProcessing &&
       !isMessageDeleted.value,
-    // [fazer.ai fork] Forward is offered only on native (session) WhatsApp inboxes, for a
-    // message that is not private, failed, deleted or a reaction, and has content to copy.
+    // [fazer.ai fork] Forward is offered only on native (session) WhatsApp inboxes; the
+    // per-message eligibility is shared with the multi-select checkboxes.
     forward:
       inbox.value?.channel_type === 'Channel::Whatsapp' &&
       SESSION_PROVIDERS.includes(inbox.value?.provider) &&
-      !props.private &&
-      !props.contentAttributes?.isReaction &&
-      !isFailedOrProcessing &&
-      !isMessageDeleted.value &&
-      (hasText || hasAttachments),
+      isMessageForwardable.value,
     report:
       isOnChatwootCloud.value &&
       isCaptainMessage.value &&
@@ -645,11 +665,6 @@ function closeContextMenu() {
 function openForwardEmail() {
   forwardEmailPosition.value = { ...contextMenuPosition.value };
   showForwardEmail.value = true;
-}
-
-function openForwardWhatsapp() {
-  forwardWhatsappPosition.value = { ...contextMenuPosition.value };
-  showForwardWhatsapp.value = true;
 }
 
 function handleReplyTo() {
@@ -852,7 +867,27 @@ provideMessageContext({
       >
         <Avatar v-bind="avatarInfo" :size="24" />
       </div>
-      <div class="[grid-area:bubble]" @contextmenu="openContextMenu($event)">
+      <div
+        class="[grid-area:bubble] relative"
+        @contextmenu="openContextMenu($event)"
+      >
+        <button
+          v-if="isForwardSelectionActive && isMessageForwardable"
+          type="button"
+          class="absolute inset-0 z-20 flex items-start p-1"
+          :class="orientation === ORIENTATION.RIGHT ? 'justify-start' : 'justify-end'"
+          :aria-pressed="isSelectedForForward"
+          @click="toggleForwardSelection"
+        >
+          <span
+            class="w-5 h-5 rounded-full border-2 shadow"
+            :class="
+              isSelectedForForward
+                ? 'bg-n-brand border-n-brand'
+                : 'bg-n-alpha-3 border-n-slate-9'
+            "
+          />
+        </button>
         <span
           v-if="showGroupSenderName"
           class="text-xs font-medium mb-0.5 inline-block ltr:mr-8 rtl:ml-8 cursor-pointer hover:underline dark:!text-[var(--dark-sender-color)]"
@@ -942,19 +977,13 @@ provideMessageContext({
         @close="closeContextMenu"
         @reply-to="handleReplyTo"
         @forward-email="openForwardEmail"
-        @forward="openForwardWhatsapp"
+        @forward="startForwardSelection"
       />
       <ForwardEmailPanel
         v-if="showForwardEmail"
         :x="forwardEmailPosition.x"
         :y="forwardEmailPosition.y"
         @close="showForwardEmail = false"
-      />
-      <ForwardWhatsappPanel
-        v-if="showForwardWhatsapp"
-        :x="forwardWhatsappPosition.x"
-        :y="forwardWhatsappPosition.y"
-        @close="showForwardWhatsapp = false"
       />
     </div>
   </div>
