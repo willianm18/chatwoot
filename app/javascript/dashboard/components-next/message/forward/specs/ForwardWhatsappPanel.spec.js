@@ -2,6 +2,7 @@ import { mount, flushPromises } from '@vue/test-utils';
 import { createStore } from 'vuex';
 import { withFullI18n } from 'test-i18n';
 import { createForwardableContactSearcher } from '../forwardContactSearch.js';
+import { useForwardSelection } from '../useForwardSelection.js';
 import ForwardWhatsappPanel from '../ForwardWhatsappPanel.vue';
 
 vi.mock('../forwardContactSearch.js', () => ({
@@ -114,6 +115,22 @@ describe('ForwardWhatsappPanel', () => {
       targetContactId: 99,
     });
     expect(wrapper.emitted('forwarded')).toBeTruthy();
+  });
+
+  it('clears the selection after a successful forward', async () => {
+    useForwardSelection().start(501, 77);
+    const { wrapper } = mountPanel();
+
+    await wrapper.find('input').setValue('jane');
+    await new Promise(resolve => {
+      setTimeout(resolve, 450);
+    });
+    await flushPromises();
+
+    await wrapper.findAll('button')[0].trigger('click');
+    await flushPromises();
+
+    expect(useForwardSelection().active.value).toBe(false);
   });
 
   it('refuses a contact without a phone number', async () => {
