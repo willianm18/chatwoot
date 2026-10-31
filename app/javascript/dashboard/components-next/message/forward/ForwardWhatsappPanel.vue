@@ -5,6 +5,7 @@ import { debounce } from '@chatwoot/utils';
 import { useAlert } from 'dashboard/composables';
 import { useStore } from 'dashboard/composables/store';
 import { createForwardableContactSearcher } from './forwardContactSearch.js';
+import { useForwardSelection } from './useForwardSelection.js';
 
 import ContextMenu from 'dashboard/components/ui/ContextMenu.vue';
 import Avatar from 'next/avatar/Avatar.vue';
@@ -20,12 +21,13 @@ const props = defineProps({
   previewText: { type: String, default: '' },
 });
 
-// `forwarded` fires only on a successful send, so the caller clears the selection then;
-// `close` also fires on dismiss, which must keep the selection for a retry.
+// `forwarded` lets the caller close the panel UI; `close` also fires on dismiss, which must
+// keep the selection for a retry.
 const emit = defineEmits(['close', 'forwarded']);
 
 const { t } = useI18n();
 const store = useStore();
+const { clear } = useForwardSelection();
 
 const searchContacts = createForwardableContactSearcher(props.conversationId);
 const contacts = ref([]);
@@ -75,6 +77,10 @@ const selectContact = async contact => {
       targetContactId: contact.id,
     });
     useAlert(t('CONVERSATION.FORWARD.SUCCESS'));
+    // Clear here, not via the emit: a forward dispatched just as the panel is dismissed would
+    // resolve on an unmounted panel and the `forwarded` listener would already be gone, leaving
+    // the bubbles checked. `clear()` is a plain store call, so it runs regardless.
+    clear();
     emit('forwarded');
   } catch (error) {
     useAlert(t('CONVERSATION.FORWARD.ERROR'));
