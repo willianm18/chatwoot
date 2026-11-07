@@ -167,8 +167,10 @@ fluxo da skill `sync-fork` não se aplicam como estão.
 - **Item "Painel" na barra lateral** (link externo via `.env`) — item fixo logo abaixo do "Chat Interno",
   visível a todos os agentes, abre a `PANEL_URL` em nova aba; some quando a URL está vazia. Edições mínimas
   no upstream:
-  - `config/installation_config.yml` — entrada `PANEL_URL` (valor vazio; fallback pro env).
-  - `app/controllers/dashboard_controller.rb` — `PANEL_URL: GlobalConfigService.load('PANEL_URL', '')` no `app_config`.
+  - `app/controllers/dashboard_controller.rb` — `PANEL_URL: ENV.fetch('PANEL_URL', '')` no `app_config`.
+    **Leitura direta do `.env`** (como o `FRONTEND_URL`), **não** via `GlobalConfigService.load` nem
+    `installation_config.yml`: semear um registro vazio no `InstallationConfig` sombreia o env var
+    (`first_or_create!` não atualiza registro existente) e o valor nunca é lido (bug corrigido em `custom.7`).
   - `app/javascript/shared/store/globalConfig.js` — lê `PANEL_URL` → getter `panelURL`.
   - `components-next/sidebar/Sidebar.vue` — item `Panel` no `menuItems` (gate por `panelURL`).
   - `components-next/sidebar/SidebarGroup.vue` + `SidebarGroupHeader.vue` — suporte opcional a link externo

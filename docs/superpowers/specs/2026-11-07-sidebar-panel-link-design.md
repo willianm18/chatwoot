@@ -35,13 +35,16 @@ fica abaixo do Chat Interno.
 
 ## Como a URL chega na tela
 
-1. `config/installation_config.yml` — nova entrada `PANEL_URL` com `value: ''` (documenta a chave
-   e a expõe no super admin; valor vazio garante fallback pro `.env`).
-2. `app/controllers/dashboard_controller.rb` — no método `app_config`, adicionar
-   `PANEL_URL: GlobalConfigService.load('PANEL_URL', '')`. Isso mescla a chave no `@global_config`
-   → `window.globalConfig`.
-3. `app/javascript/shared/store/globalConfig.js` — ler `PANEL_URL: panelURL` do
+1. `app/controllers/dashboard_controller.rb` — no método `app_config`, adicionar
+   `PANEL_URL: ENV.fetch('PANEL_URL', '')`. Leitura **direta do `.env`** (como o `FRONTEND_URL` no
+   `vueapp.html.erb`), que mescla a chave no `@global_config` → `window.globalConfig`.
+2. `app/javascript/shared/store/globalConfig.js` — ler `PANEL_URL: panelURL` do
    `window.globalConfig` e expor no `state` como `panelURL`.
+
+> **Não usar `GlobalConfigService.load` nem `config/installation_config.yml` aqui.** Semear um
+> registro vazio no `InstallationConfig` sombreia o env var: `GlobalConfigService.load` lê o banco,
+> e `first_or_create!` não atualiza o registro existente, então o valor do `.env` nunca é lido e o
+> item nunca aparece. Leitura direta de `ENV` é imune a isso (bug pego em HML, corrigido em `custom.7`).
 
 `.env` do deploy (HML e PRD) recebe `PANEL_URL=https://...`. A URL do painel é passada pelo usuário
 no deploy; não é fixada no código.
@@ -109,7 +112,6 @@ namespace upstream `sidebar.json`). As três línguas são obrigatórias.
 ## Arquivos tocados
 
 Upstream (aditivo, registrar em `.claude/CLAUDE.md` → "Mudanças nossas"):
-- `config/installation_config.yml`
 - `app/controllers/dashboard_controller.rb`
 - `app/javascript/shared/store/globalConfig.js`
 - `app/javascript/dashboard/components-next/sidebar/Sidebar.vue`
@@ -117,5 +119,5 @@ Upstream (aditivo, registrar em `.claude/CLAUDE.md` → "Mudanças nossas"):
 - `app/javascript/dashboard/components-next/sidebar/SidebarGroupHeader.vue`
 
 Nosso:
-- `app/javascript/dashboard/i18n/fazer-ai/locale/<locale>/sidebar.json` (en, pt_BR, es)
+- `app/javascript/dashboard/i18n/fazer-ai/locale/<locale>/settings.json` (chave `SIDEBAR.PANEL`; en, pt_BR, es)
 - `.env.example` — documentar `PANEL_URL`
