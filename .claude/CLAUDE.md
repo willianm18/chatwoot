@@ -164,6 +164,31 @@ fluxo da skill `sync-fork` não se aplicam como estão.
   `dashboard/components/custom/InboxColorPicker.vue`, `routes/dashboard/conversation/inboxBubbleStyle.js`, i18n no
   overlay `fazer-ai/locale/<locale>/inboxMgmt.json`. A paleta é duplicada (concern ↔ const JS): manter em sincronia.
   Reverter = tirar o include/linha/param/bindings e dropar a coluna.
+- **Item "Painel" na barra lateral** (link externo via `.env`) — item fixo logo abaixo do "Chat Interno",
+  visível a todos os agentes, abre a `PANEL_URL` em nova aba; some quando a URL está vazia. Edições mínimas
+  no upstream:
+  - `config/installation_config.yml` — entrada `PANEL_URL` (valor vazio; fallback pro env).
+  - `app/controllers/dashboard_controller.rb` — `PANEL_URL: GlobalConfigService.load('PANEL_URL', '')` no `app_config`.
+  - `app/javascript/shared/store/globalConfig.js` — lê `PANEL_URL` → getter `panelURL`.
+  - `components-next/sidebar/Sidebar.vue` — item `Panel` no `menuItems` (gate por `panelURL`).
+  - `components-next/sidebar/SidebarGroup.vue` + `SidebarGroupHeader.vue` — suporte opcional a link externo
+    (props `href`/`target`; aditivo, não muda rota interna).
+  - `.env.example` — documenta `PANEL_URL`.
+  i18n: chave `SIDEBAR.PANEL` no overlay `fazer-ai/locale/<locale>/settings.json`. Design em
+  `docs/superpowers/specs/2026-11-07-sidebar-panel-link-design.md`.
+  Reverter = tirar o item/props/getter/config e a chave i18n.
+- **Horário de almoço por caixa** (`custom_lunch_break` jsonb em `inboxes`) — faixa única diária (igual todos os
+  dias) dentro do horário comercial; durante ela a caixa é tratada como fechada e a `out_of_office_message`
+  existente dispara. Edições mínimas no upstream:
+  - `app/models/inbox.rb` — `include Custom::InboxLunchBreak` (depois de `OutOfOffisable`, para o `super`).
+  - `app/views/api/v1/models/_inbox.json.jbuilder` — `json.custom_lunch_break`.
+  - `app/controllers/api/v1/accounts/inboxes_controller.rb` — `custom_lunch_break` (hash) em `inbox_attributes`.
+  - `routes/dashboard/settings/inbox/components/WeeklyAvailability.vue` — monta o `InboxLunchBreak` + payload.
+  O resto é nosso: `app/models/concerns/custom/inbox_lunch_break.rb` (estende `out_of_office?`),
+  `dashboard/components/custom/InboxLunchBreak.vue`, migration `...add_custom_lunch_break_to_inboxes`
+  (idempotente), i18n `INBOX_MGMT.BUSINESS_HOURS.LUNCH_BREAK.*` no overlay `inboxMgmt.json`. Design em
+  `docs/superpowers/specs/2026-11-07-inbox-lunch-break-design.md`.
+  Reverter = tirar o include/linha/param/binding, apagar os arquivos novos e dropar a coluna.
 
 - `app/services/message_templates/hook_execution_service.rb` — guard `return if message.reaction?` no
   `perform`, para que uma reação (👍/❤️) não dispare out-of-office, greeting nem email-collect. O conector

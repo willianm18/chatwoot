@@ -25,6 +25,7 @@ json.lock_to_single_conversation resource.lock_to_single_conversation
 json.sender_name_type resource.sender_name_type
 json.business_name resource.business_name
 json.custom_color resource.custom_color
+json.custom_lunch_break resource.custom_lunch_break
 
 if resource.portal.present?
   json.help_center do

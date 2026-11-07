@@ -6,6 +6,10 @@ import Icon from 'next/icon/Icon.vue';
 
 const props = defineProps({
   to: { type: [Object, String], default: '' },
+  // External URL (fork). When set, the item is a plain anchor that opens the
+  // link instead of resolving an in-app route.
+  href: { type: String, default: null },
+  target: { type: String, default: '_blank' },
   label: { type: String, default: '' },
   icon: { type: [String, Object], default: '' },
   expandable: { type: Boolean, default: false },
@@ -24,11 +28,19 @@ const count = computed(() =>
   dynamicCount.value > 99 ? '99+' : dynamicCount.value
 );
 
+const isExternal = computed(() => Boolean(props.href));
+
 // A real link so Cmd/Ctrl-click opens it in a new tab; a plain click keeps
-// the in-app toggle instead of following the href.
-const href = computed(() => (props.to ? router.resolve(props.to).href : null));
+// the in-app toggle instead of following the href. External links keep their
+// href untouched so the browser follows it.
+const href = computed(() => {
+  if (isExternal.value) return props.href;
+  return props.to ? router.resolve(props.to).href : null;
+});
 
 const onClick = event => {
+  // External links navigate normally (new tab) — no in-app toggle.
+  if (isExternal.value) return;
   if (event.metaKey || event.altKey || event.ctrlKey || event.shiftKey) return;
   event.preventDefault();
   emit('toggle');
@@ -37,11 +49,13 @@ const onClick = event => {
 
 <template>
   <component
-    :is="to ? 'a' : 'div'"
+    :is="to || href ? 'a' : 'div'"
     class="flex items-center gap-2 px-1.5 py-1 rounded-lg h-8 min-w-0"
     role="button"
     draggable="false"
     :href="href"
+    :target="isExternal ? target : undefined"
+    :rel="isExternal ? 'noopener noreferrer' : undefined"
     :title="label"
     :class="{
       'text-n-slate-12 bg-n-alpha-2 font-medium': isActive && !hasActiveChild,

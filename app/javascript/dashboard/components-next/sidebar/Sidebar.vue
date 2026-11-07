@@ -61,6 +61,10 @@ const isACustomBrandedInstance = useMapGetter(
 );
 const isRTL = useMapGetter('accounts/isRTL');
 
+// Fork: optional external "Panel" link, configured via the PANEL_URL env var.
+const globalConfig = useMapGetter('globalConfig/get');
+const panelURL = computed(() => globalConfig.value?.panelURL || '');
+
 const { width: windowWidth } = useWindowSize();
 const isMobile = computed(() => windowWidth.value < 768);
 
@@ -535,6 +539,16 @@ const menuItems = computed(() => {
         count: 'internalChat/getUnreadCount',
       },
     },
+    ...(panelURL.value
+      ? [
+          {
+            name: 'Panel',
+            label: t('SIDEBAR.PANEL'),
+            icon: 'i-lucide-layout-dashboard',
+            href: panelURL.value,
+          },
+        ]
+      : []),
     {
       name: 'Kanban',
       label: t('SIDEBAR.KANBAN'),
