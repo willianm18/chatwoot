@@ -708,11 +708,3 @@
   value: 'production'
   locked: false
 ## ---- End of mobile incoming-call push ---- ##
-
-## ---- Fork custom config ---- ##
-- name: PANEL_URL
-  value: ''
-  display_title: 'Panel URL'
-  description: 'External panel link shown in the dashboard sidebar (below Internal Chat). Opens in a new tab. Falls back to the PANEL_URL env var when empty; left blank the sidebar item is hidden.'
-  locked: false
-## ---- End of fork custom config ---- ##
