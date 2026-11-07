@@ -89,6 +89,7 @@ class DashboardController < ActionController::Base
       BAILEYS_WHATSAPP_GROUPS_ENABLED: Whatsapp::Providers::WhatsappBaileysService.groups_enabled?,
       IS_COMPANY_ENRICHMENT_ENABLED: ChatwootApp.enterprise? && GlobalConfigService.load('CONTEXT_DEV_API_KEY', nil).present?,
       AZURE_APP_ID: GlobalConfigService.load('AZURE_APP_ID', ''),
+      PANEL_URL: GlobalConfigService.load('PANEL_URL', ''),
       GIT_SHA: GIT_HASH,
       ALLOWED_LOGIN_METHODS: allowed_login_methods,
       ACTIVE_PLATFORM_BANNERS: active_platform_banners,

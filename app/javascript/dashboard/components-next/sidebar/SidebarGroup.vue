@@ -15,6 +15,10 @@ const props = defineProps({
   label: { type: String, required: true },
   icon: { type: [String, Object, Function], default: null },
   to: { type: Object, default: null },
+  // External URL (fork). A top-level item with `href` opens the link in a new
+  // tab instead of navigating an in-app route; it never has children.
+  href: { type: String, default: null },
+  target: { type: String, default: '_blank' },
   activeOn: { type: Array, default: () => [] },
   children: { type: Array, default: undefined },
   getterKeys: { type: Object, default: () => ({}) },
@@ -258,8 +262,11 @@ watch(
         @mouseleave="handleMouseLeave"
       >
         <component
-          :is="linkTo ? 'router-link' : 'button'"
-          :to="linkTo"
+          :is="href ? 'a' : linkTo ? 'router-link' : 'button'"
+          :to="href ? undefined : linkTo"
+          :href="href || undefined"
+          :target="href ? target : undefined"
+          :rel="href ? 'noopener noreferrer' : undefined"
           type="button"
           class="flex items-center justify-center size-10 rounded-lg"
           :class="{
@@ -289,7 +296,9 @@ watch(
         :icon
         :name
         :label
-        :to="linkTo"
+        :to="href ? null : linkTo"
+        :href="href"
+        :target="target"
         :getter-keys="getterKeys"
         :is-active="isActive"
         :has-active-child="hasActiveChild"

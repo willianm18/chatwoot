@@ -270,6 +270,13 @@
       "LABEL": "Cor da caixa",
       "DESCRIPTION": "Usada para colorir o nome da caixa na lista de conversas e os balões das mensagens enviadas.",
       "NONE": "Sem cor"
+    },
+    "BUSINESS_HOURS": {
+      "LUNCH_BREAK": {
+        "TITLE": "Horário de almoço",
+        "HELP": "Uma única pausa diária (igual todos os dias) dentro do horário comercial. Durante ela a caixa é tratada como fechada e a mensagem de ausência é enviada.",
+        "VALIDATION_ERROR": "O horário de término deve ser depois do de início."
+      }
     }
   }
 }

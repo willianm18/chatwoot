@@ -368,6 +368,7 @@ class Api::V1::Accounts::InboxesController < Api::V1::Accounts::BaseController #
      :enable_auto_assignment, :working_hours_enabled, :out_of_office_message, :timezone, :allow_messages_after_resolved,
      :lock_to_single_conversation, :prevent_assignment_takeover, :drop_assignee_outside_team_on_reopen, :portal_id, :sender_name_type, :business_name,
      :custom_color,
+     { custom_lunch_break: [:enabled, :start_hour, :start_minutes, :end_hour, :end_minutes] },
      :reopen_owner, :reopen_owner_window_hours,
      { csat_config: [:display_type, :message, :button_text, :language,
                      { survey_rules: [:operator, { values: [] }],

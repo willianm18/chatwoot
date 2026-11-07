@@ -270,6 +270,13 @@
       "LABEL": "Inbox color",
       "DESCRIPTION": "Used to tint the inbox name in the conversation list and the sent message bubbles.",
       "NONE": "No color"
+    },
+    "BUSINESS_HOURS": {
+      "LUNCH_BREAK": {
+        "TITLE": "Lunch break",
+        "HELP": "A single daily break (same every day) within business hours. During it the inbox is treated as closed and the out-of-office message is sent.",
+        "VALIDATION_ERROR": "End time must be after start time."
+      }
     }
   }
 }

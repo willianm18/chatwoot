@@ -52,6 +52,8 @@ class Inbox < ApplicationRecord
   include InboxBrandedEmailLayoutable
   include InboxBotStatus
   include Custom::InboxCustomColor
+  # Included after OutOfOffisable so out_of_office? can call super.
+  include Custom::InboxLunchBreak
   include InboxReopenOwner
 
   # Not allowing characters:

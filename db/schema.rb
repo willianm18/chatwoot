@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_31_135441) do
+ActiveRecord::Schema[7.2].define(version: 2026_11_07_134215) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1358,6 +1358,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_31_135441) do
     t.string "custom_color"
     t.integer "reopen_owner", default: 0, null: false
     t.integer "reopen_owner_window_hours"
+    t.jsonb "custom_lunch_break", default: {}, null: false
     t.index ["account_id"], name: "index_inboxes_on_account_id"
     t.index ["channel_id", "channel_type"], name: "index_inboxes_on_channel_id_and_channel_type"
     t.index ["portal_id"], name: "index_inboxes_on_portal_id"

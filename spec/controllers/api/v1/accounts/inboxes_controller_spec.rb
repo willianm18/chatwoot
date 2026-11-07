@@ -387,6 +387,18 @@ RSpec.describe 'Inboxes API', type: :request do
         expect(response).to have_http_status(:success)
         expect(response.parsed_body['custom_color']).to eq(Custom::InboxCustomColor::PALETTE.first)
       end
+
+      it 'serializes custom_lunch_break' do
+        inbox.update!(working_hours_enabled: true,
+                      custom_lunch_break: { enabled: true, start_hour: 12, start_minutes: 0, end_hour: 13, end_minutes: 0 })
+
+        get "/api/v1/accounts/#{account.id}/inboxes/#{inbox.id}",
+            headers: admin.create_new_auth_token, as: :json
+
+        expect(response).to have_http_status(:success)
+        expect(response.parsed_body['custom_lunch_break']['enabled']).to be(true)
+        expect(response.parsed_body['custom_lunch_break']['start_hour']).to eq(12)
+      end
     end
   end
 
@@ -729,6 +741,16 @@ RSpec.describe 'Inboxes API', type: :request do
               headers: admin.create_new_auth_token, as: :json
 
         expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'updates custom_lunch_break' do
+        patch "/api/v1/accounts/#{account.id}/inboxes/#{inbox.id}",
+              params: { working_hours_enabled: true,
+                        custom_lunch_break: { enabled: true, start_hour: 12, start_minutes: 0, end_hour: 13, end_minutes: 30 } },
+              headers: admin.create_new_auth_token, as: :json
+
+        expect(response).to have_http_status(:success)
+        expect(inbox.reload.custom_lunch_break['end_minutes']).to eq(30)
       end
 
       it 'sets who owns a reopened conversation and exposes it' do
