@@ -126,11 +126,7 @@ const remove = async () => {
         </button>
       </div>
       <div class="flex items-center justify-between">
-        <button
-          v-if="card"
-          class="text-sm text-n-ruby-11"
-          @click="remove"
-        >
+        <button v-if="card" class="text-sm text-n-ruby-11" @click="remove">
           {{ t('KANBAN.CARD.DELETE') }}
         </button>
         <button

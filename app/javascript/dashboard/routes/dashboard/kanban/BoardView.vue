@@ -122,7 +122,7 @@ const clearFilters = () => {
         class="h-10 text-sm border border-dashed w-72 shrink-0 rounded-xl border-n-weak text-n-slate-10 hover:text-n-slate-12"
         @click="addColumn"
       >
-        + {{ t('KANBAN.NEW_COLUMN') }}
+        {{ `+ ${t('KANBAN.NEW_COLUMN')}` }}
       </button>
     </div>
     <CardDialog

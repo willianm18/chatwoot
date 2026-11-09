@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { useMapGetter } from 'dashboard/composables/store';
 import { useI18n } from 'vue-i18n';
 import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
+import Icon from 'dashboard/components-next/icon/Icon.vue';
 import KanbanAPI from 'dashboard/api/custom/kanban';
 
 const props = defineProps({
@@ -54,15 +55,15 @@ const remove = async memberId => {
         <span>
           {{ member.name }}
           <span v-if="member.owner" class="text-xs ms-2 text-n-slate-10">
-            ({{ t('KANBAN.OWNER') }})
+            {{ `(${t('KANBAN.OWNER')})` }}
           </span>
         </span>
         <button
           v-if="!member.owner"
-          class="text-xs text-n-ruby-11"
+          class="text-n-ruby-11"
           @click="remove(member.id)"
         >
-          ✕
+          <Icon icon="i-lucide-x" class="size-3.5" />
         </button>
       </li>
     </ul>

@@ -23,7 +23,9 @@ const onChange = event => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-2 p-2 w-72 shrink-0 rounded-xl bg-n-alpha-black1">
+  <div
+    class="flex flex-col gap-2 p-2 w-72 shrink-0 rounded-xl bg-n-alpha-black1"
+  >
     <h3 class="px-1 text-sm font-medium text-n-slate-12">{{ column.name }}</h3>
     <draggable
       :list="cards"
@@ -44,7 +46,7 @@ const onChange = event => {
       class="px-1 py-1 text-xs text-start text-n-slate-10 hover:text-n-slate-12"
       @click="$emit('addCard', column)"
     >
-      + {{ t('KANBAN.NEW_CARD') }}
+      {{ `+ ${t('KANBAN.NEW_CARD')}` }}
     </button>
   </div>
 </template>
