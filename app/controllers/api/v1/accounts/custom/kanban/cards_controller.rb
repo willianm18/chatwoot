@@ -25,9 +25,10 @@ class Api::V1::Accounts::Custom::Kanban::CardsController < Api::V1::Accounts::Cu
   # Move the card to column_id at position, resequencing the target column.
   def move
     target = @current_board.columns.find(params.require(:column_id))
-    position = params.require(:position).to_i
     @card.update!(column: target)
     siblings = target.cards.where.not(id: @card.id).to_a
+    # Clamp so an out-of-range position can't leave nil gaps in the array.
+    position = params.require(:position).to_i.clamp(0, siblings.length)
     siblings.insert(position, @card)
     siblings.each_with_index { |card, index| card.update!(position: index) }
     head :ok
