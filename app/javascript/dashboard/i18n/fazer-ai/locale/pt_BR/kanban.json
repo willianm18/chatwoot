@@ -1,11 +1,29 @@
 {
   "KANBAN": {
-    "PAYWALL": {
-      "TITLE": "Faça upgrade para usar o Kanban",
-      "DESCRIPTION": "O recurso Kanban requer uma assinatura Chatwoot Pro fazer.ai.",
-      "UPGRADE_PROMPT": "Assine o Chatwoot Pro fazer.ai para acessar funis Kanban, gerenciamento de tarefas e automação de fluxo de trabalho.",
-      "NON_ADMIN_MESSAGE": "O recurso Kanban não está disponível no seu plano atual. Entre em contato com o administrador para fazer o upgrade.",
-      "UPGRADE_NOW": "Fazer upgrade"
+    "HEADER": "Quadros",
+    "NEW_BOARD": "Novo quadro",
+    "BOARD_NAME": "Nome do quadro",
+    "EMPTY_BOARDS": "Você ainda não tem quadros. Crie o primeiro.",
+    "OWNER": "Dono",
+    "MEMBERS": "Membros",
+    "ADD_MEMBER": "Adicionar membro",
+    "DELETE_BOARD": "Excluir quadro",
+    "NEW_COLUMN": "Adicionar coluna",
+    "COLUMN_NAME": "Nome da coluna",
+    "NEW_CARD": "Adicionar cartão",
+    "CARD": {
+      "TITLE": "Título",
+      "DESCRIPTION": "Descrição",
+      "ASSIGNEE": "Responsável",
+      "LABELS": "Etiquetas",
+      "DUE_DATE": "Prazo",
+      "SAVE": "Salvar",
+      "DELETE": "Excluir cartão"
+    },
+    "FILTERS": {
+      "ASSIGNEE": "Filtrar por responsável",
+      "LABEL": "Filtrar por etiqueta",
+      "CLEAR": "Limpar filtros"
     }
   }
 }

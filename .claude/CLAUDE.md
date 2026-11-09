@@ -200,6 +200,33 @@ fluxo da skill `sync-fork` não se aplicam como estão.
   `set_waiting_since_on_incoming_message`). Spec de regressão em
   `spec/services/message_templates/hook_execution_service_spec.rb`. Candidato a contribuição para a fazer.ai.
   Reverter = tirar a linha do `perform`.
+- **Kanban nativo (Tarefas de equipe)** — quadros estilo Trello com cartões criados pelos usuários, atribuição
+  aos próprios agentes, etiquetas por quadro, prazo, filtros e drag-and-drop. **Substitui** o paywall do Kanban
+  Pro da fazer.ai (reusa ícone/rota `kanban_view`). Acesso por quadro: membro OU `administrator` da conta; só o
+  dono gerencia membros/apaga. Sem tempo real na V1 (recarrega ao mudar). Tabelas novas `custom_kanban_*`
+  (boards, board_members, columns, cards, labels, card_labels) e models `Custom::Kanban::*` — tudo nosso.
+  Edições no upstream:
+  - `config/routes.rb` — bloco `namespace :custom { namespace :kanban { resources :boards … } }` (member/collection
+    `move`/`reorder`).
+  - `app/models/account.rb` — `include Custom::AccountKanban` (concern nosso com `has_many :kanban_boards`).
+  - `db/schema.rb` — 6 tabelas `custom_kanban_*` + versão `2026_11_09_143744` (editado à mão porque não há Rails
+    local; **um dev com Ruby deve rodar `bundle exec rails db:migrate` e conferir que o schema regenerado é
+    idêntico** antes do merge).
+  - `routes/dashboard/kanban/Index.vue` — paywall → `<router-view>` host; `kanban.routes.js` — rotas filhas
+    (`kanban_view` = lista, `kanban_board` = quadro).
+  - `store/index.js` + `store/mutation-types.js` — registro do módulo `kanban` e tipos `SET/ADD/DELETE_KANBAN_*`.
+  - i18n overlay `fazer-ai/locale/<locale>/kanban.json` — **chaves de paywall `KANBAN.PAYWALL.*` removidas**,
+    substituídas pelas da UI (en/pt_BR/es).
+  O resto é arquivo novo nosso: `app/controllers/api/v1/accounts/custom/kanban/*`,
+  `app/views/api/v1/accounts/custom/kanban/*`, `app/models/custom/kanban/*`,
+  `app/models/concerns/custom/account_kanban.rb`, `dashboard/api/custom/kanban.js`,
+  `dashboard/store/modules/custom/kanban.js`, `routes/dashboard/kanban/{BoardList,BoardView}.vue` +
+  `components/{KanbanColumn,KanbanCard,CardDialog,BoardMembersDialog}.vue` + `constants.js`. A paleta de cores das
+  etiquetas é duplicada (model `Custom::Kanban::Label::PALETTE` ↔ `constants.js` `KANBAN_LABEL_PALETTE`): manter em
+  sincronia. Specs de backend validados **só na CI** (sem Ruby local). Design/plano em `docs/superpowers/`
+  (`specs/2026-11-09-kanban-team-tasks-design.md`, `plans/2026-11-09-kanban-team-tasks.md`).
+  Reverter = tirar o bloco de rotas, o include no Account, a troca do Index.vue/rotas, o registro no store e os
+  tipos, restaurar as chaves de paywall no `kanban.json`, dropar as 6 tabelas e apagar os arquivos novos.
 
 ## Gotchas conhecidos do fork
 
