@@ -66,6 +66,11 @@ const remove = attachment =>
     <p v-else class="text-xs text-n-slate-10">
       {{ t('KANBAN.ATTACHMENTS.EMPTY') }}
     </p>
-    <input ref="fileInput" type="file" class="text-xs text-n-slate-11" @change="onPick" />
+    <input
+      ref="fileInput"
+      type="file"
+      class="text-xs text-n-slate-11"
+      @change="onPick"
+    />
   </div>
 </template>

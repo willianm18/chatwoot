@@ -18,7 +18,7 @@ RSpec.describe 'Kanban attachments API', type: :request do
     post "/api/v1/accounts/#{account.id}/custom/kanban/boards/#{board.id}/cards/#{card.id}/attachments",
          params: { file: file }, headers: member.create_new_auth_token
     expect(response).to have_http_status(:success)
-    expect(card.files.count).to eq(1)
+    expect(card.reload.files.count).to eq(1)
     expect(card.files.last.blob.metadata['uploaded_by']).to eq(member.id)
   end
 
