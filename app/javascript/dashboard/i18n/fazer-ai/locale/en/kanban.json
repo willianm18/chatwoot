@@ -24,6 +24,19 @@
       "ASSIGNEE": "Filter by assignee",
       "LABEL": "Filter by label",
       "CLEAR": "Clear filters"
+    },
+    "COMMENTS": {
+      "TITLE": "Comments",
+      "PLACEHOLDER": "Write a comment",
+      "SEND": "Send",
+      "DELETE": "Delete",
+      "EMPTY": "No comments yet."
+    },
+    "ATTACHMENTS": {
+      "TITLE": "Attachments",
+      "REMOVE": "Remove",
+      "EMPTY": "No attachments yet.",
+      "TOO_LARGE": "File is too large (max 40 MB)."
     }
   }
 }
