@@ -111,6 +111,7 @@ class ActionCableConnector extends BaseActionCableConnector {
       'voice_call.outbound_connected': this.onVoiceCallOutboundConnected,
       'voice_call.outbound_accepted': this.onVoiceCallOutboundAccepted,
       'voice_call.ended': this.onVoiceCallEnded,
+      'kanban.board.updated': this.onKanbanBoardUpdated,
     };
   }
 
@@ -765,6 +766,10 @@ class ActionCableConnector extends BaseActionCableConnector {
     }
     store.setCallActive(data.call_id);
     armOutboundRecorder();
+  };
+
+  onKanbanBoardUpdated = data => {
+    this.app.$store.dispatch('kanban/onBoardUpdated', data.board_id);
   };
 
   // eslint-disable-next-line class-methods-use-this

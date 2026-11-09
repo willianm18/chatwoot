@@ -6,3 +6,19 @@ json.assignee_id card.assignee_id
 json.due_date card.due_date
 json.position card.position
 json.label_ids card.labels.map(&:id)
+json.comments card.comments.includes(:user) do |comment|
+  json.id comment.id
+  json.author_id comment.user_id
+  json.author_name comment.user.name
+  json.content comment.content
+  json.created_at comment.created_at
+end
+json.attachments card.files.map do |file|
+  {
+    id: file.id,
+    filename: file.filename.to_s,
+    file_url: card.file_url(file),
+    content_type: file.content_type,
+    is_image: file.content_type.to_s.start_with?('image/')
+  }
+end

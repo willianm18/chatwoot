@@ -2,6 +2,7 @@
 # scoped by access (member or account admin) and exposes the owner-only guard.
 class Api::V1::Accounts::Custom::Kanban::BaseController < Api::V1::Accounts::BaseController
   before_action :current_board
+  after_action :broadcast_board_update
 
   private
 
@@ -14,5 +15,14 @@ class Api::V1::Accounts::Custom::Kanban::BaseController < Api::V1::Accounts::Bas
     return if @current_board.owned_by?(current_user)
 
     render json: { error: 'Only the board owner can perform this action' }, status: :forbidden
+  end
+
+  def broadcast_board_update
+    return if request.get? || !response.successful? || @current_board.nil?
+
+    tokens = @current_board.member_users.pluck(:pubsub_token).compact
+    return if tokens.blank?
+
+    ActionCableBroadcastJob.perform_later(tokens, 'kanban.board.updated', { board_id: @current_board.id })
   end
 end

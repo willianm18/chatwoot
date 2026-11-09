@@ -227,6 +227,21 @@ fluxo da skill `sync-fork` não se aplicam como estão.
   (`specs/2026-11-09-kanban-team-tasks-design.md`, `plans/2026-11-09-kanban-team-tasks.md`).
   Reverter = tirar o bloco de rotas, o include no Account, a troca do Index.vue/rotas, o registro no store e os
   tipos, restaurar as chaves de paywall no `kanban.json`, dropar as 6 tabelas e apagar os arquivos novos.
+  **Fase 2 (tempo real + comentários + anexos)** — tabela nova `custom_kanban_card_comments` (+ model
+  `Custom::Kanban::CardComment`), `has_many :comments` + `has_many_attached :files` (limite 40 MB) no
+  `Custom::Kanban::Card`. Controllers novos `comments` e `attachments` aninhados em `cards`; o payload do
+  cartão (`_card.json.jbuilder`) passa a trazer `comments[]` e `attachments[]`. Tempo real por um
+  `after_action :broadcast_board_update` no `base_controller` do Kanban (reusa o `ActionCableBroadcastJob`
+  existente, evento `kanban.board.updated`, para os `pubsub_token` dos membros) — um broadcast por request.
+  Edições mínimas no upstream: `config/routes.rb` (comments/attachments), `db/schema.rb` (tabela + versão
+  `2026_11_09_151230`), `app/javascript/dashboard/helper/actionCable.js` (uma linha no mapa `events` +
+  handler `onKanbanBoardUpdated` → `kanban/onBoardUpdated`). Resto é nosso:
+  `controllers/.../kanban/{comments,attachments}_controller.rb`, `views/.../kanban/{comments,attachments}/
+  show.json.jbuilder`, `models/custom/kanban/card_comment.rb`, `routes/dashboard/kanban/components/
+  {CardComments,CardAttachments}.vue`, actions no store (`createComment`/.../`onBoardUpdated`), i18n
+  `KANBAN.COMMENTS.*`/`KANBAN.ATTACHMENTS.*`. "Quem anexou" = `blob.metadata['uploaded_by']`; admin não-membro
+  não recebe tempo real (recarrega). Design/plano em `docs/superpowers/` (`*-kanban-phase2-*`). Reverter =
+  dropar a tabela, tirar as rotas/`after_action`/linha do actionCable e apagar os arquivos novos.
 
 ## Gotchas conhecidos do fork
 

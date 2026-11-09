@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_11_09_143744) do
+ActiveRecord::Schema[7.2].define(version: 2026_11_09_151230) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1176,6 +1176,15 @@ ActiveRecord::Schema[7.2].define(version: 2026_11_09_143744) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["custom_kanban_card_id", "custom_kanban_label_id"], name: "idx_custom_kanban_card_labels_on_card_and_label", unique: true
+  end
+
+  create_table "custom_kanban_card_comments", force: :cascade do |t|
+    t.bigint "custom_kanban_card_id", null: false
+    t.bigint "user_id", null: false
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["custom_kanban_card_id"], name: "index_custom_kanban_card_comments_on_custom_kanban_card_id"
   end
 
   create_table "custom_kanban_cards", force: :cascade do |t|

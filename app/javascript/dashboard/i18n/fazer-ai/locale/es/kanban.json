@@ -24,6 +24,19 @@
       "ASSIGNEE": "Filtrar por responsable",
       "LABEL": "Filtrar por etiqueta",
       "CLEAR": "Limpiar filtros"
+    },
+    "COMMENTS": {
+      "TITLE": "Comentarios",
+      "PLACEHOLDER": "Escribe un comentario",
+      "SEND": "Enviar",
+      "DELETE": "Eliminar",
+      "EMPTY": "Aún no hay comentarios."
+    },
+    "ATTACHMENTS": {
+      "TITLE": "Adjuntos",
+      "REMOVE": "Quitar",
+      "EMPTY": "Aún no hay adjuntos.",
+      "TOO_LARGE": "El archivo es demasiado grande (máx. 40 MB)."
     }
   }
 }

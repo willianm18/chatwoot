@@ -1,20 +1,36 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useStore, useMapGetter } from 'dashboard/composables/store';
 import { useI18n } from 'vue-i18n';
 import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
+import CardComments from './CardComments.vue';
+import CardAttachments from './CardAttachments.vue';
 
 const props = defineProps({
   boardId: { type: [String, Number], required: true },
   card: { type: Object, default: null },
   columnId: { type: [String, Number], default: null },
   labels: { type: Array, default: () => [] },
+  isOwner: { type: Boolean, default: false },
 });
 
 const store = useStore();
 const { t } = useI18n();
 const dialogRef = ref(null);
 const agents = useMapGetter('agents/getAgents');
+const currentBoard = useMapGetter('kanban/getCurrentBoard');
+
+// Live card: re-reads from the store after every refetch so new comments /
+// attachments show without reopening the dialog. Falls back to the prop so
+// the first render (before the board loads) works too.
+const liveCard = computed(() => {
+  if (!props.card) return null;
+  const columns = currentBoard.value?.columns ?? [];
+  return (
+    columns.flatMap(c => c.cards).find(c => c.id === props.card.id) ??
+    props.card
+  );
+});
 
 const emptyForm = () => ({
   title: '',
@@ -136,6 +152,16 @@ const remove = async () => {
           {{ t('KANBAN.CARD.SAVE') }}
         </button>
       </div>
+      <template v-if="liveCard">
+        <hr class="border-n-weak" />
+        <CardComments
+          :board-id="boardId"
+          :card="liveCard"
+          :is-owner="isOwner"
+        />
+        <hr class="border-n-weak" />
+        <CardAttachments :board-id="boardId" :card="liveCard" />
+      </template>
     </div>
   </Dialog>
 </template>

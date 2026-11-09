@@ -108,6 +108,31 @@ export const actions = {
     await KanbanAPI.deleteLabel(boardId, id);
     await dispatch('fetchBoard', boardId);
   },
+  createComment: async ({ dispatch }, { boardId, cardId, content }) => {
+    await KanbanAPI.createComment(boardId, cardId, content);
+    await dispatch('fetchBoard', boardId);
+  },
+  updateComment: async ({ dispatch }, { boardId, cardId, id, content }) => {
+    await KanbanAPI.updateComment(boardId, cardId, id, content);
+    await dispatch('fetchBoard', boardId);
+  },
+  deleteComment: async ({ dispatch }, { boardId, cardId, id }) => {
+    await KanbanAPI.deleteComment(boardId, cardId, id);
+    await dispatch('fetchBoard', boardId);
+  },
+  addAttachment: async ({ dispatch }, { boardId, cardId, file }) => {
+    await KanbanAPI.addAttachment(boardId, cardId, file);
+    await dispatch('fetchBoard', boardId);
+  },
+  removeAttachment: async ({ dispatch }, { boardId, cardId, id }) => {
+    await KanbanAPI.removeAttachment(boardId, cardId, id);
+    await dispatch('fetchBoard', boardId);
+  },
+  // Real-time: refetch only when the event targets the board we are viewing.
+  onBoardUpdated: ({ state: s, dispatch }, boardId) => {
+    if (s.currentBoard && s.currentBoard.id === boardId)
+      dispatch('fetchBoard', boardId);
+  },
 };
 
 export const mutations = {
