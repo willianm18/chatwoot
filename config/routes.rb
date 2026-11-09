@@ -176,6 +176,8 @@ Rails.application.routes.draw do
                 end
                 resources :cards, only: [:create, :update, :destroy] do
                   patch :move, on: :member
+                  resources :comments, only: [:create, :update, :destroy]
+                  resources :attachments, only: [:create, :destroy]
                 end
               end
             end
