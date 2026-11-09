@@ -1,4 +1,4 @@
-import { mutations } from '../kanban';
+import { mutations, actions } from '../kanban';
 import types from '../../../mutation-types';
 
 describe('kanban mutations', () => {
@@ -19,5 +19,19 @@ describe('kanban mutations', () => {
     const state = { boards: [] };
     mutations[types.ADD_KANBAN_BOARD](state, { id: 9 });
     expect(state.boards).toEqual([{ id: 9 }]);
+  });
+});
+
+describe('kanban onBoardUpdated', () => {
+  it('refetches when the open board matches', () => {
+    const dispatch = vi.fn();
+    actions.onBoardUpdated({ state: { currentBoard: { id: 5 } }, dispatch }, 5);
+    expect(dispatch).toHaveBeenCalledWith('fetchBoard', 5);
+  });
+
+  it('ignores events for other boards', () => {
+    const dispatch = vi.fn();
+    actions.onBoardUpdated({ state: { currentBoard: { id: 5 } }, dispatch }, 9);
+    expect(dispatch).not.toHaveBeenCalled();
   });
 });

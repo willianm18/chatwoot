@@ -75,6 +75,43 @@ class KanbanBoardsAPI extends ApiClient {
   removeMember(boardId, memberId) {
     return axios.delete(`${this.nested(boardId, 'members')}/${memberId}`);
   }
+
+  // Comments
+  createComment(boardId, cardId, content) {
+    return axios.post(`${this.nested(boardId, 'cards')}/${cardId}/comments`, {
+      content,
+    });
+  }
+
+  updateComment(boardId, cardId, id, content) {
+    return axios.patch(
+      `${this.nested(boardId, 'cards')}/${cardId}/comments/${id}`,
+      { content }
+    );
+  }
+
+  deleteComment(boardId, cardId, id) {
+    return axios.delete(
+      `${this.nested(boardId, 'cards')}/${cardId}/comments/${id}`
+    );
+  }
+
+  // Attachments
+  addAttachment(boardId, cardId, fileBlob) {
+    const formData = new FormData();
+    formData.append('file', fileBlob);
+    return axios.post(
+      `${this.nested(boardId, 'cards')}/${cardId}/attachments`,
+      formData,
+      { headers: { 'Content-Type': 'multipart/form-data' } }
+    );
+  }
+
+  removeAttachment(boardId, cardId, id) {
+    return axios.delete(
+      `${this.nested(boardId, 'cards')}/${cardId}/attachments/${id}`
+    );
+  }
 }
 
 export default new KanbanBoardsAPI();
