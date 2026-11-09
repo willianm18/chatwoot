@@ -10,7 +10,8 @@ class Api::V1::Accounts::Custom::Kanban::AttachmentsController < Api::V1::Accoun
     blob = @card.files.last.blob
     blob.metadata['uploaded_by'] = current_user.id
     blob.save!
-    render 'api/v1/accounts/custom/kanban/boards/card', locals: { card: @card.reload }
+    @card.reload
+    render :show
   end
 
   def destroy
