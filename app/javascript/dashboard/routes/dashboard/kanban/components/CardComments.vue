@@ -1,0 +1,84 @@
+<script setup>
+import { ref } from 'vue';
+import { useStore, useMapGetter } from 'dashboard/composables/store';
+import { useI18n } from 'vue-i18n';
+
+const props = defineProps({
+  boardId: { type: [String, Number], required: true },
+  card: { type: Object, required: true },
+  isOwner: { type: Boolean, default: false },
+});
+
+const store = useStore();
+const { t } = useI18n();
+const currentUser = useMapGetter('getCurrentUser');
+const draft = ref('');
+
+const canManage = comment =>
+  comment.author_id === currentUser.value.id || props.isOwner;
+
+const add = async () => {
+  if (!draft.value.trim()) return;
+  await store.dispatch('kanban/createComment', {
+    boardId: props.boardId,
+    cardId: props.card.id,
+    content: draft.value.trim(),
+  });
+  draft.value = '';
+};
+
+const remove = comment =>
+  store.dispatch('kanban/deleteComment', {
+    boardId: props.boardId,
+    cardId: props.card.id,
+    id: comment.id,
+  });
+</script>
+
+<template>
+  <div class="flex flex-col gap-2">
+    <h4 class="text-sm font-medium text-n-slate-12">
+      {{ t('KANBAN.COMMENTS.TITLE') }}
+    </h4>
+    <ul v-if="card.comments?.length" class="flex flex-col gap-2">
+      <li
+        v-for="comment in card.comments"
+        :key="comment.id"
+        class="flex flex-col gap-0.5 p-2 rounded-lg bg-n-alpha-black1"
+      >
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-n-slate-11">
+            {{ comment.author_name }}
+          </span>
+          <button
+            v-if="canManage(comment)"
+            class="text-xs text-n-ruby-11"
+            @click="remove(comment)"
+          >
+            {{ t('KANBAN.COMMENTS.DELETE') }}
+          </button>
+        </div>
+        <p class="text-sm text-n-slate-12 whitespace-pre-wrap">
+          {{ comment.content }}
+        </p>
+      </li>
+    </ul>
+    <p v-else class="text-xs text-n-slate-10">
+      {{ t('KANBAN.COMMENTS.EMPTY') }}
+    </p>
+    <div class="flex gap-2">
+      <input
+        v-model="draft"
+        :placeholder="t('KANBAN.COMMENTS.PLACEHOLDER')"
+        class="flex-1 px-3 py-2 text-sm border rounded-lg border-n-weak bg-n-alpha-black1 text-n-slate-12"
+        @keyup.enter="add"
+      />
+      <button
+        class="px-3 py-1.5 text-sm text-white rounded-lg bg-n-brand"
+        @click="add"
+      >
+        {{ t('KANBAN.COMMENTS.SEND') }}
+      </button>
+    </div>
+  </div>
+</template>

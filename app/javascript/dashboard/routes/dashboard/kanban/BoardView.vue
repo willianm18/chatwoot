@@ -131,6 +131,7 @@ const clearFilters = () => {
       :card="activeCard"
       :column-id="activeColumnId"
       :labels="labels"
+      :is-owner="board.owner"
     />
     <BoardMembersDialog ref="membersDialog" :board-id="boardId" />
   </section>
