@@ -165,6 +165,21 @@ Rails.application.routes.draw do
           resources :macros, only: [:index, :create, :show, :update, :destroy] do
             post :execute, on: :member
           end
+          # [fazer.ai fork] Native team-tasks Kanban (docs/superpowers/specs/2026-11-09-kanban-team-tasks-design.md)
+          namespace :custom do
+            namespace :kanban do
+              resources :boards, only: [:index, :show, :create, :update, :destroy] do
+                resources :members, only: [:index, :create, :destroy]
+                resources :labels, only: [:create, :update, :destroy]
+                resources :columns, only: [:create, :update, :destroy] do
+                  patch :reorder, on: :collection
+                end
+                resources :cards, only: [:create, :update, :destroy] do
+                  patch :move, on: :member
+                end
+              end
+            end
+          end
           resources :sla_policies, only: [:index, :create, :show, :update, :destroy]
           resources :custom_roles, only: [:index, :create, :show, :update, :destroy]
           resources :agent_capacity_policies, only: [:index, :create, :show, :update, :destroy] do
