@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_11_07_134215) do
+ActiveRecord::Schema[7.2].define(version: 2026_11_09_143744) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1151,6 +1151,62 @@ ActiveRecord::Schema[7.2].define(version: 2026_11_07_134215) do
     t.index ["account_id", "filter_type", "visibility", "user_id"], name: "index_custom_filters_on_account_type_visibility_user"
     t.index ["account_id"], name: "index_custom_filters_on_account_id"
     t.index ["user_id"], name: "index_custom_filters_on_user_id"
+  end
+
+  create_table "custom_kanban_board_members", force: :cascade do |t|
+    t.bigint "custom_kanban_board_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["custom_kanban_board_id", "user_id"], name: "idx_custom_kanban_board_members_on_board_and_user", unique: true
+  end
+
+  create_table "custom_kanban_boards", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "name", null: false
+    t.bigint "created_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_custom_kanban_boards_on_account_id"
+  end
+
+  create_table "custom_kanban_card_labels", force: :cascade do |t|
+    t.bigint "custom_kanban_card_id", null: false
+    t.bigint "custom_kanban_label_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["custom_kanban_card_id", "custom_kanban_label_id"], name: "idx_custom_kanban_card_labels_on_card_and_label", unique: true
+  end
+
+  create_table "custom_kanban_cards", force: :cascade do |t|
+    t.bigint "custom_kanban_column_id", null: false
+    t.string "title", null: false
+    t.text "description"
+    t.bigint "assignee_id"
+    t.date "due_date"
+    t.integer "position", default: 0, null: false
+    t.bigint "created_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["custom_kanban_column_id"], name: "index_custom_kanban_cards_on_custom_kanban_column_id"
+  end
+
+  create_table "custom_kanban_columns", force: :cascade do |t|
+    t.bigint "custom_kanban_board_id", null: false
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["custom_kanban_board_id"], name: "index_custom_kanban_columns_on_custom_kanban_board_id"
+  end
+
+  create_table "custom_kanban_labels", force: :cascade do |t|
+    t.bigint "custom_kanban_board_id", null: false
+    t.string "name", null: false
+    t.string "color", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["custom_kanban_board_id"], name: "index_custom_kanban_labels_on_custom_kanban_board_id"
   end
 
   create_table "custom_roles", force: :cascade do |t|
