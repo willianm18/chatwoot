@@ -1,11 +1,29 @@
 {
   "KANBAN": {
-    "PAYWALL": {
-      "TITLE": "Mejore su plan para usar Kanban",
-      "DESCRIPTION": "La función Kanban requiere una suscripción a Chatwoot Pro de fazer.ai.",
-      "UPGRADE_PROMPT": "Suscríbase a Chatwoot Pro de fazer.ai para acceder a los embudos Kanban, la gestión de tareas y la automatización de flujos de trabajo.",
-      "NON_ADMIN_MESSAGE": "La función Kanban no está disponible en su plan actual. Contacte a su administrador para mejorar el plan.",
-      "UPGRADE_NOW": "Mejorar plan"
+    "HEADER": "Tableros",
+    "NEW_BOARD": "Nuevo tablero",
+    "BOARD_NAME": "Nombre del tablero",
+    "EMPTY_BOARDS": "Aún no tienes tableros. Crea el primero.",
+    "OWNER": "Propietario",
+    "MEMBERS": "Miembros",
+    "ADD_MEMBER": "Agregar miembro",
+    "DELETE_BOARD": "Eliminar tablero",
+    "NEW_COLUMN": "Agregar columna",
+    "COLUMN_NAME": "Nombre de la columna",
+    "NEW_CARD": "Agregar tarjeta",
+    "CARD": {
+      "TITLE": "Título",
+      "DESCRIPTION": "Descripción",
+      "ASSIGNEE": "Responsable",
+      "LABELS": "Etiquetas",
+      "DUE_DATE": "Fecha límite",
+      "SAVE": "Guardar",
+      "DELETE": "Eliminar tarjeta"
+    },
+    "FILTERS": {
+      "ASSIGNEE": "Filtrar por responsable",
+      "LABEL": "Filtrar por etiqueta",
+      "CLEAR": "Limpiar filtros"
     }
   }
 }

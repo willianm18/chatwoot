@@ -1,11 +1,29 @@
 {
   "KANBAN": {
-    "PAYWALL": {
-      "TITLE": "Upgrade to use Kanban",
-      "DESCRIPTION": "The Kanban feature requires a fazer.ai Chatwoot Pro subscription.",
-      "UPGRADE_PROMPT": "Subscribe to fazer.ai Chatwoot Pro to access Kanban funnels, task management, and workflow automation.",
-      "NON_ADMIN_MESSAGE": "The Kanban feature is not available on your current plan. Please reach out to your administrator to upgrade.",
-      "UPGRADE_NOW": "Upgrade now"
+    "HEADER": "Boards",
+    "NEW_BOARD": "New board",
+    "BOARD_NAME": "Board name",
+    "EMPTY_BOARDS": "You have no boards yet. Create your first one.",
+    "OWNER": "Owner",
+    "MEMBERS": "Members",
+    "ADD_MEMBER": "Add member",
+    "DELETE_BOARD": "Delete board",
+    "NEW_COLUMN": "Add column",
+    "COLUMN_NAME": "Column name",
+    "NEW_CARD": "Add a card",
+    "CARD": {
+      "TITLE": "Title",
+      "DESCRIPTION": "Description",
+      "ASSIGNEE": "Assignee",
+      "LABELS": "Labels",
+      "DUE_DATE": "Due date",
+      "SAVE": "Save",
+      "DELETE": "Delete card"
+    },
+    "FILTERS": {
+      "ASSIGNEE": "Filter by assignee",
+      "LABEL": "Filter by label",
+      "CLEAR": "Clear filters"
     }
   }
 }
