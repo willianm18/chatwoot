@@ -18,7 +18,8 @@
     "CARD": {
       "TITLE": "Title",
       "DESCRIPTION": "Description",
-      "ASSIGNEE": "Assignee",
+      "ASSIGNEES": "Assignees",
+      "IN_COLUMN": "in {column}",
       "LABELS": "Labels",
       "DUE_DATE": "Due date",
       "SAVE": "Save",
@@ -27,6 +28,7 @@
     "FILTERS": {
       "ASSIGNEE": "Filter by assignee",
       "LABEL": "Filter by label",
+      "MY_CARDS": "My cards",
       "CLEAR": "Clear filters"
     },
     "COMMENTS": {

@@ -251,6 +251,27 @@ fluxo da skill `sync-fork` não se aplicam como estão.
     `member_users`). Specs invertidos (board/boards_controller/broadcast). Design em
     `docs/superpowers/specs/2026-11-10-kanban-private-boards-design.md`. Reverter = restaurar a cláusula de
     admin no scope e o cruzamento com `administrator` no broadcast.
+  - **Fase 3 (visual Trello + múltiplos responsáveis)** (`custom.N`, 2026-11-10) — card único `assignee_id`
+    vira **vários responsáveis** (tabela nova `custom_kanban_card_assignees` + model
+    `Custom::Kanban::CardAssignee`; `has_many :assignees, through:` no `Card`), restritos a **membros do
+    quadro** (o dono já é membro). Migration idempotente faz backfill do `assignee_id` e **dropa a coluna**.
+    Visual: card estilo Trello (etiquetas como pills com nome, avatares empilhados dos responsáveis, badge de
+    prazo vermelho quando vencido, ícones de descrição/comentários/anexos); diálogo do card **largo em 2
+    colunas** (`Dialog width="4xl"`): card à esquerda, thread de comentários à direita; coluna com contador +
+    botão `＋` no topo; barra de topo com filtro por responsável (membros) + atalho **"Meus cards"**. Edições
+    no upstream: `db/schema.rb` (tabela `custom_kanban_card_assignees` + versão `2026_11_10_120000`; remoção da
+    coluna `assignee_id` de `custom_kanban_cards` — **um dev com Ruby roda `db:migrate` e confere o schema
+    regenerado**). Arquivos editados (nossos): `models/custom/kanban/card.rb`,
+    `controllers/.../kanban/cards_controller.rb` (`assignee_ids` + validação de pertencimento),
+    `views/.../boards/_card.json.jbuilder` (`assignee_ids`), `views/.../boards/show.json.jbuilder` (embarca
+    `members` com avatar), `routes/dashboard/kanban/{BoardView.vue,components/{KanbanCard,KanbanColumn,CardDialog}.vue}`,
+    i18n `KANBAN.CARD.{ASSIGNEES,IN_COLUMN}` + `KANBAN.FILTERS.MY_CARDS` no overlay (removida a chave singular
+    `CARD.ASSIGNEE`). Arquivos novos (nossos): `models/custom/kanban/card_assignee.rb`, migration
+    `...add_card_assignees_to_kanban`, `routes/dashboard/kanban/cardDateFormat.js`,
+    `routes/dashboard/kanban/components/AssigneePicker.vue`. Specs de backend só na CI. Design/plano em
+    `docs/superpowers/` (`specs/2026-11-10-kanban-visual-refresh-multi-assignee-design.md`,
+    `plans/2026-11-10-kanban-visual-refresh-multi-assignee.md`). Reverter = dropar a tabela (restaurar
+    `assignee_id`), reverter os arquivos editados e apagar os novos.
 
 ## Gotchas conhecidos do fork
 

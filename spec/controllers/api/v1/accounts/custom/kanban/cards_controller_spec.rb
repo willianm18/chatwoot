@@ -48,11 +48,33 @@ RSpec.describe 'Kanban cards API', type: :request do
     expect(response).to have_http_status(:not_found)
   end
 
-  it 'rejects an assignee outside the account' do
-    other_account_user = create(:user, account: create(:account), role: :agent)
+  it 'assigns multiple board members to a card' do
+    member = create(:user, account: account, role: :agent)
+    board.members.create!(user: member)
     post "/api/v1/accounts/#{account.id}/custom/kanban/boards/#{board.id}/cards",
-         params: { card: { column_id: todo.id, title: 'x', assignee_id: other_account_user.id } },
+         params: { card: { column_id: todo.id, title: 'x', assignee_ids: [owner.id, member.id] } },
+         headers: owner.create_new_auth_token, as: :json
+    expect(response).to have_http_status(:success)
+    expect(response.parsed_body['assignee_ids']).to contain_exactly(owner.id, member.id)
+  end
+
+  it 'rejects an assignee who is not a board member' do
+    outsider = create(:user, account: account, role: :agent)
+    post "/api/v1/accounts/#{account.id}/custom/kanban/boards/#{board.id}/cards",
+         params: { card: { column_id: todo.id, title: 'x', assignee_ids: [outsider.id] } },
          headers: owner.create_new_auth_token, as: :json
     expect(response).to have_http_status(:unprocessable_entity)
+  end
+
+  it 'returns assignee_ids on the card and members on the board' do
+    member = create(:user, account: account, role: :agent)
+    board.members.create!(user: member)
+    card = todo.cards.create!(title: 'x', position: 0, assignee_ids: [member.id])
+    get "/api/v1/accounts/#{account.id}/custom/kanban/boards/#{board.id}",
+        headers: owner.create_new_auth_token, as: :json
+    body = response.parsed_body
+    expect(body['members'].map { |m| m['user_id'] }).to include(member.id)
+    returned = body['columns'].flat_map { |c| c['cards'] }.find { |c| c['id'] == card.id }
+    expect(returned['assignee_ids']).to include(member.id)
   end
 end

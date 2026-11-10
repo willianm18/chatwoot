@@ -18,7 +18,8 @@
     "CARD": {
       "TITLE": "Título",
       "DESCRIPTION": "Descrição",
-      "ASSIGNEE": "Responsável",
+      "ASSIGNEES": "Responsáveis",
+      "IN_COLUMN": "em {column}",
       "LABELS": "Etiquetas",
       "DUE_DATE": "Prazo",
       "SAVE": "Salvar",
@@ -27,6 +28,7 @@
     "FILTERS": {
       "ASSIGNEE": "Filtrar por responsável",
       "LABEL": "Filtrar por etiqueta",
+      "MY_CARDS": "Meus cards",
       "CLEAR": "Limpar filtros"
     },
     "COMMENTS": {

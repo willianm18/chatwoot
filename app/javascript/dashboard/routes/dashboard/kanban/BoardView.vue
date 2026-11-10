@@ -15,9 +15,10 @@ const store = useStore();
 const { t } = useI18n();
 
 const board = useMapGetter('kanban/getCurrentBoard');
-const agents = useMapGetter('agents/getAgents');
+const currentUser = useMapGetter('getCurrentUser');
 const columns = computed(() => board.value?.columns ?? []);
 const labels = computed(() => board.value?.labels ?? []);
+const members = computed(() => board.value?.members ?? []);
 const isOwner = computed(() => board.value?.owner);
 
 const cardDialog = ref(null);
@@ -26,19 +27,22 @@ const activeCard = ref(null);
 const activeColumnId = ref(null);
 const assigneeFilter = ref(null);
 const labelFilter = ref(null);
+const onlyMine = ref(false);
 
 onMounted(() => {
   store.dispatch('kanban/fetchBoard', props.boardId);
-  store.dispatch('agents/get');
 });
 
 const visibleCardIds = column =>
   column.cards
-    .filter(
-      card =>
-        (!assigneeFilter.value || card.assignee_id === assigneeFilter.value) &&
-        (!labelFilter.value || card.label_ids?.includes(labelFilter.value))
-    )
+    .filter(card => {
+      const assignees = card.assignee_ids ?? [];
+      return (
+        (!assigneeFilter.value || assignees.includes(assigneeFilter.value)) &&
+        (!labelFilter.value || card.label_ids?.includes(labelFilter.value)) &&
+        (!onlyMine.value || assignees.includes(currentUser.value.id))
+      );
+    })
     .map(card => card.id);
 
 const onCardMoved = ({ cardId, toColumnId, position }) =>
@@ -65,6 +69,7 @@ const addColumn = () =>
 const clearFilters = () => {
   assigneeFilter.value = null;
   labelFilter.value = null;
+  onlyMine.value = false;
 };
 </script>
 
@@ -79,8 +84,12 @@ const clearFilters = () => {
         class="px-2 py-1 text-xs border rounded-lg border-n-weak bg-n-alpha-black1 text-n-slate-12"
       >
         <option :value="null">{{ t('KANBAN.FILTERS.ASSIGNEE') }}</option>
-        <option v-for="agent in agents" :key="agent.id" :value="agent.id">
-          {{ agent.name }}
+        <option
+          v-for="member in members"
+          :key="member.user_id"
+          :value="member.user_id"
+        >
+          {{ member.name }}
         </option>
       </select>
       <select
@@ -93,7 +102,18 @@ const clearFilters = () => {
         </option>
       </select>
       <button
-        v-if="assigneeFilter || labelFilter"
+        class="px-2 py-1 text-xs border rounded-lg"
+        :class="
+          onlyMine
+            ? 'border-n-brand text-n-brand'
+            : 'border-n-weak text-n-slate-11'
+        "
+        @click="onlyMine = !onlyMine"
+      >
+        {{ t('KANBAN.FILTERS.MY_CARDS') }}
+      </button>
+      <button
+        v-if="assigneeFilter || labelFilter || onlyMine"
         class="text-xs text-n-slate-10 hover:text-n-slate-12"
         @click="clearFilters"
       >
@@ -117,6 +137,7 @@ const clearFilters = () => {
         :column="column"
         :visible-card-ids="visibleCardIds(column)"
         :labels="labels"
+        :members="members"
         @card-moved="onCardMoved"
         @add-card="addCard"
         @open-card="openCard"
@@ -134,6 +155,7 @@ const clearFilters = () => {
       :card="activeCard"
       :column-id="activeColumnId"
       :labels="labels"
+      :members="members"
       :is-owner="board.owner"
     />
     <BoardMembersDialog ref="membersDialog" :board-id="boardId" />
