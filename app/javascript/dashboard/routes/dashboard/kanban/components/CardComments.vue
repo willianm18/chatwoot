@@ -26,9 +26,12 @@ const draft = ref('');
 const editorKey = ref(0); // bump to reset the editor after sending
 
 // Newest first.
-const sortedComments = computed(() => [...(props.card.comments ?? [])].reverse());
+const sortedComments = computed(() =>
+  [...(props.card.comments ?? [])].reverse()
+);
 
-const formatStamp = iso => (iso ? format(parseISO(iso), 'd MMM yyyy, HH:mm') : '');
+const formatStamp = iso =>
+  iso ? format(parseISO(iso), 'd MMM yyyy, HH:mm') : '';
 
 const canManage = comment =>
   comment.author_id === currentUser.value.id || props.isOwner;
