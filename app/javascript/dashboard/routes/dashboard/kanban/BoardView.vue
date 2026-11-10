@@ -79,12 +79,14 @@ const clearFilters = () => {
 <template>
   <section v-if="board" class="flex flex-col w-full h-full bg-n-surface-1">
     <header
-      class="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-n-weak"
+      class="flex flex-wrap items-center gap-2 px-4 py-2.5 border-b border-n-weak"
     >
-      <h1 class="text-lg font-medium text-n-slate-12">{{ board.name }}</h1>
+      <h1 class="text-base font-medium me-1 text-n-slate-12">
+        {{ board.name }}
+      </h1>
       <select
         v-model="assigneeFilter"
-        class="px-2 py-1 text-xs border rounded-lg border-n-weak bg-n-alpha-black1 text-n-slate-12"
+        class="px-2 py-1 text-xs border rounded-lg cursor-pointer border-n-weak bg-n-alpha-black1 text-n-slate-11 hover:border-n-slate-6"
       >
         <option :value="null">{{ t('KANBAN.FILTERS.ASSIGNEE') }}</option>
         <option
@@ -97,7 +99,7 @@ const clearFilters = () => {
       </select>
       <select
         v-model="labelFilter"
-        class="px-2 py-1 text-xs border rounded-lg border-n-weak bg-n-alpha-black1 text-n-slate-12"
+        class="px-2 py-1 text-xs border rounded-lg cursor-pointer border-n-weak bg-n-alpha-black1 text-n-slate-11 hover:border-n-slate-6"
       >
         <option :value="null">{{ t('KANBAN.FILTERS.LABEL') }}</option>
         <option v-for="label in labels" :key="label.id" :value="label.id">
@@ -109,7 +111,7 @@ const clearFilters = () => {
         :class="
           onlyMine
             ? 'border-n-brand text-n-brand'
-            : 'border-n-weak text-n-slate-11'
+            : 'border-n-weak text-n-slate-11 hover:border-n-slate-6'
         "
         @click="onlyMine = !onlyMine"
       >
