@@ -113,7 +113,7 @@ const remove = async () => {
 <template>
   <Dialog
     ref="dialogRef"
-    width="4xl"
+    width="5xl"
     :show-confirm-button="false"
     :show-cancel-button="false"
   >
@@ -131,7 +131,7 @@ const remove = async () => {
     <div class="flex flex-col gap-6 md:flex-row">
       <!-- Left column: card -->
       <div
-        class="flex flex-col flex-1 gap-4 md:border-e md:border-n-weak md:pe-6"
+        class="flex flex-col flex-1 min-w-0 gap-4 md:border-e md:border-n-weak md:pe-6"
       >
         <section class="flex flex-col gap-2">
           <h4 class="text-xs font-medium uppercase text-n-slate-10">
@@ -233,7 +233,7 @@ const remove = async () => {
       </div>
 
       <!-- Right column: comments -->
-      <div v-if="liveCard" class="flex flex-col shrink-0 md:w-72">
+      <div v-if="liveCard" class="flex flex-col min-w-0 shrink-0 md:w-80">
         <CardComments
           :board-id="boardId"
           :card="liveCard"
