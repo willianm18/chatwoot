@@ -21,6 +21,7 @@
       "DESCRIPTION": "Description",
       "ASSIGNEES": "Assignees",
       "IN_COLUMN": "in {column}",
+      "ADD_DESCRIPTION": "Add a description…",
       "LABELS": "Labels",
       "DUE_DATE": "Due date",
       "SAVE": "Save",
@@ -36,6 +37,7 @@
       "TITLE": "Comments",
       "PLACEHOLDER": "Write a comment",
       "SEND": "Send",
+      "CANCEL": "Cancel",
       "DELETE": "Delete",
       "EMPTY": "No comments yet."
     },

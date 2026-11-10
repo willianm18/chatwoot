@@ -21,6 +21,7 @@
       "DESCRIPTION": "Descrição",
       "ASSIGNEES": "Responsáveis",
       "IN_COLUMN": "em {column}",
+      "ADD_DESCRIPTION": "Adicionar descrição…",
       "LABELS": "Etiquetas",
       "DUE_DATE": "Prazo",
       "SAVE": "Salvar",
@@ -36,6 +37,7 @@
       "TITLE": "Comentários",
       "PLACEHOLDER": "Escreva um comentário",
       "SEND": "Enviar",
+      "CANCEL": "Cancelar",
       "DELETE": "Excluir",
       "EMPTY": "Ainda não há comentários."
     },

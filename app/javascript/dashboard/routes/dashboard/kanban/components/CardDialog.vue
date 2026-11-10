@@ -3,6 +3,7 @@ import { ref, watch, computed } from 'vue';
 import { vOnClickOutside } from '@vueuse/components';
 import { useStore, useMapGetter } from 'dashboard/composables/store';
 import { useI18n } from 'vue-i18n';
+import { useMessageFormatter } from 'shared/composables/useMessageFormatter';
 import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
 import Avatar from 'dashboard/components-next/avatar/Avatar.vue';
@@ -23,8 +24,14 @@ const props = defineProps({
 
 const store = useStore();
 const { t } = useI18n();
+const { formatMessage } = useMessageFormatter();
 const dialogRef = ref(null);
 const currentBoard = useMapGetter('kanban/getCurrentBoard');
+
+// Guarantees at most one rich editor is mounted at a time (description or the
+// comment composer). The editor keeps its ProseMirror view in a module-level
+// variable, so two simultaneous instances would write to the same view.
+const activeEditor = ref(null);
 
 // Live card: re-reads from the store after every refetch so new comments /
 // attachments show without reopening the dialog. Falls back to the prop so
@@ -58,6 +65,7 @@ const form = ref(emptyForm());
 watch(
   () => props.card,
   card => {
+    activeEditor.value = null;
     form.value = card
       ? {
           title: card.title,
@@ -212,13 +220,29 @@ const remove = async () => {
             {{ t('KANBAN.CARD.DESCRIPTION') }}
           </h4>
           <FullEditor
+            v-if="activeEditor === 'description'"
             v-model="form.description"
             :editor-id="`kanban-desc-${card?.id ?? 'new'}`"
             :placeholder="t('KANBAN.CARD.DESCRIPTION')"
             :enabled-menu-options="ARTICLE_EDITOR_MENU_OPTIONS"
-            :autofocus="false"
+            autofocus
             class="px-3 py-2 text-sm border rounded-lg border-n-weak bg-n-alpha-black1 text-n-slate-12"
           />
+          <!-- eslint-disable-next-line vue/no-v-html -->
+          <div
+            v-else-if="form.description"
+            class="px-3 py-2 text-sm prose-sm rounded-lg cursor-text text-n-slate-12 max-w-none bg-n-alpha-black1 hover:bg-n-alpha-black2"
+            @click="activeEditor = 'description'"
+            v-html="formatMessage(form.description, false, false)"
+          />
+          <button
+            v-else
+            type="button"
+            class="px-3 py-2 text-sm rounded-lg text-start text-n-slate-10 bg-n-alpha-black1 hover:bg-n-alpha-black2"
+            @click="activeEditor = 'description'"
+          >
+            {{ t('KANBAN.CARD.ADD_DESCRIPTION') }}
+          </button>
         </section>
 
         <CardAttachments v-if="liveCard" :board-id="boardId" :card="liveCard" />
@@ -237,11 +261,14 @@ const remove = async () => {
       </div>
 
       <!-- Right column: comments -->
-      <div v-if="liveCard" class="flex flex-col min-w-0 shrink-0 md:w-80">
+      <div v-if="liveCard" class="flex flex-col min-w-0 shrink-0 md:w-72">
         <CardComments
           :board-id="boardId"
           :card="liveCard"
           :is-owner="isOwner"
+          :active="activeEditor === 'comment'"
+          @activate="activeEditor = 'comment'"
+          @deactivate="activeEditor = null"
         />
       </div>
     </div>
