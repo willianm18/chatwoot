@@ -13,7 +13,8 @@
     "NEW_CARD": "Add a card",
     "COLUMN": {
       "DELETE": "Delete column",
-      "DELETE_CONFIRM": "Delete this column and all its cards?"
+      "DELETE_CONFIRM": "Delete this column and all its cards?",
+      "COLOR": "Column color"
     },
     "CARD": {
       "TITLE": "Title",
