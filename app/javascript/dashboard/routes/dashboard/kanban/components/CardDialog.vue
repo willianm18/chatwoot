@@ -130,7 +130,9 @@ const remove = async () => {
 
     <div class="flex flex-col gap-6 md:flex-row">
       <!-- Left column: card -->
-      <div class="flex flex-col flex-1 gap-4 md:border-e md:border-n-weak md:pe-6">
+      <div
+        class="flex flex-col flex-1 gap-4 md:border-e md:border-n-weak md:pe-6"
+      >
         <section class="flex flex-col gap-2">
           <h4 class="text-xs font-medium uppercase text-n-slate-10">
             {{ t('KANBAN.CARD.ASSIGNEES') }}
