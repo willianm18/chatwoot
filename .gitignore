@@ -110,3 +110,4 @@ docs-local/
 local/
 Procfile.worktree
 .nodeterm/project.json
+.superpowers/
