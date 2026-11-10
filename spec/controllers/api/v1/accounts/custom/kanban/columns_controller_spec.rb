@@ -26,4 +26,14 @@ RSpec.describe 'Kanban columns API', type: :request do
     expect(c1.reload.position).to eq(1)
     expect(c2.reload.position).to eq(0)
   end
+
+  it 'updates the column color' do
+    column = board.columns.create!(name: 'To do', position: 0)
+    color = Custom::InboxCustomColor::PALETTE.first
+    patch "/api/v1/accounts/#{account.id}/custom/kanban/boards/#{board.id}/columns/#{column.id}",
+          params: { column: { custom_color: color } }, headers: owner.create_new_auth_token, as: :json
+    expect(response).to have_http_status(:success)
+    expect(column.reload.custom_color).to eq(color)
+    expect(response.parsed_body['custom_color']).to eq(color)
+  end
 end

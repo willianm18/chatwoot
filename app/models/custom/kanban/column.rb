@@ -7,6 +7,7 @@ class Custom::Kanban::Column < ApplicationRecord
                    foreign_key: :custom_kanban_column_id, inverse_of: :column, dependent: :destroy
 
   validates :name, presence: true
+  validates :custom_color, inclusion: { in: Custom::InboxCustomColor::PALETTE }, allow_nil: true
 
   default_scope { order(:position, :id) }
 end
