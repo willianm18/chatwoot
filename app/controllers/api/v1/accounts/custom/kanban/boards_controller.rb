@@ -1,4 +1,4 @@
-# [fazer.ai fork] Team-tasks Kanban boards. Access = member or account admin;
+# [fazer.ai fork] Team-tasks Kanban boards. Access = members only;
 # only the owner can delete.
 class Api::V1::Accounts::Custom::Kanban::BoardsController < Api::V1::Accounts::BaseController
   before_action :set_board, only: [:show, :update, :destroy]

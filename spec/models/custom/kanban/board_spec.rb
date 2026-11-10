@@ -29,9 +29,9 @@ RSpec.describe Custom::Kanban::Board do
       expect(described_class.accessible_by(account_user_for(outsider))).not_to include(board)
     end
 
-    it 'includes every account board for an administrator' do
+    it 'excludes boards from a non-member administrator (role does not grant access)' do
       board = build_board(owner)
-      expect(described_class.accessible_by(account_user_for(admin))).to include(board)
+      expect(described_class.accessible_by(account_user_for(admin))).not_to include(board)
     end
   end
 

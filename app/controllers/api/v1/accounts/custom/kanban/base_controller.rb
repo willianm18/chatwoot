@@ -1,5 +1,5 @@
 # [fazer.ai fork] Base for Kanban resources nested under a board. Loads the board
-# scoped by access (member or account admin) and exposes the owner-only guard.
+# scoped by access (members only) and exposes the owner-only guard.
 class Api::V1::Accounts::Custom::Kanban::BaseController < Api::V1::Accounts::BaseController
   before_action :current_board
   after_action :broadcast_board_update
@@ -30,11 +30,9 @@ class Api::V1::Accounts::Custom::Kanban::BaseController < Api::V1::Accounts::Bas
     )
   end
 
-  # Everyone who can have the board open gets live updates: its members plus the
-  # account administrators (admins see every board without being a member).
+  # Everyone who can have the board open gets live updates: its members. Account
+  # role no longer grants access, so admins who are not members are not notified.
   def board_update_tokens
-    member_ids = @current_board.members.pluck(:user_id)
-    admin_ids = @current_board.account.account_users.where(role: :administrator).pluck(:user_id)
-    User.where(id: (member_ids + admin_ids).uniq).pluck(:pubsub_token).compact
+    @current_board.member_users.pluck(:pubsub_token).compact
   end
 end

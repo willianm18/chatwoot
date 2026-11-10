@@ -17,13 +17,14 @@ class Custom::Kanban::Board < ApplicationRecord
 
   validates :name, presence: true
 
-  # A user can access a board when they are a member of it, or when they are an
-  # administrator of the account (admins see every board — see design spec §2).
+  # A user can access a board only when they are a member of it. The account role
+  # (administrator/agent) does not grant visibility — boards are private to their
+  # members (see docs/superpowers/specs/2026-11-10-kanban-private-boards-design.md).
   scope :accessible_by, lambda { |account_user|
-    boards = where(account_id: account_user.account_id)
-    next boards if account_user.administrator?
-
-    boards.joins(:members).where(custom_kanban_board_members: { user_id: account_user.user_id }).distinct
+    where(account_id: account_user.account_id)
+      .joins(:members)
+      .where(custom_kanban_board_members: { user_id: account_user.user_id })
+      .distinct
   }
 
   def owned_by?(user)
