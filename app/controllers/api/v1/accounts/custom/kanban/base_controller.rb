@@ -23,7 +23,11 @@ class Api::V1::Accounts::Custom::Kanban::BaseController < Api::V1::Accounts::Bas
     tokens = board_update_tokens
     return if tokens.blank?
 
-    ActionCableBroadcastJob.perform_later(tokens, 'kanban.board.updated', { board_id: @current_board.id })
+    # account_id is required: the dashboard cable drops events whose account_id
+    # does not match the current account (ActionCableConnector#isAValidEvent).
+    ActionCableBroadcastJob.perform_later(
+      tokens, 'kanban.board.updated', { board_id: @current_board.id, account_id: @current_board.account_id }
+    )
   end
 
   # Everyone who can have the board open gets live updates: its members plus the

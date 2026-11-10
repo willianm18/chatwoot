@@ -15,7 +15,7 @@ RSpec.describe 'Kanban real-time broadcast', type: :request do
   it 'broadcasts kanban.board.updated to member tokens after a mutation' do
     expect(ActionCableBroadcastJob).to receive(:perform_later) do |tokens, event, data|
       expect(event).to eq('kanban.board.updated')
-      expect(data).to eq({ board_id: board.id })
+      expect(data).to eq({ board_id: board.id, account_id: account.id })
       expect(tokens).to contain_exactly(owner.pubsub_token, member.pubsub_token)
     end
     post "/api/v1/accounts/#{account.id}/custom/kanban/boards/#{board.id}/cards",
