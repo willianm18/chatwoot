@@ -21,7 +21,6 @@ class Custom::Kanban::Card < ApplicationRecord
 
   validates :title, presence: true
   validate :files_within_size_limit
-  validate :assignees_are_board_members
 
   default_scope { order(:position, :id) }
 
@@ -37,10 +36,5 @@ class Custom::Kanban::Card < ApplicationRecord
     files.each do |file|
       errors.add(:files, 'is too large') if file.blob.present? && file.blob.byte_size > FILE_SIZE_LIMIT
     end
-  end
-
-  def assignees_are_board_members
-    member_ids = board.member_users.pluck(:id)
-    errors.add(:assignees, 'must be board members') if assignees.any? { |user| member_ids.exclude?(user.id) }
   end
 end

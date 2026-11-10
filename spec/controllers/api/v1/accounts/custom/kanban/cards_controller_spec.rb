@@ -40,6 +40,21 @@ RSpec.describe 'Kanban cards API', type: :request do
     expect(c.reload.position).to eq(1)
   end
 
+  it 'moves a card even when a sibling still carries a non-member assignee' do
+    # Regression: #move resequences the whole column with update!; a model-level
+    # assignee-membership validation would make that fail with 422 for any column
+    # holding a card whose assignee is no longer a member, silently breaking the
+    # move and its real-time broadcast.
+    outsider = create(:user, account: account, role: :agent)
+    sibling = doing.cards.create!(title: 'sibling', position: 0)
+    Custom::Kanban::CardAssignee.create!(card: sibling, user: outsider)
+    moving = todo.cards.create!(title: 'moving', position: 0)
+    patch "/api/v1/accounts/#{account.id}/custom/kanban/boards/#{board.id}/cards/#{moving.id}/move",
+          params: { column_id: doing.id, position: 0 }, headers: owner.create_new_auth_token, as: :json
+    expect(response).to have_http_status(:success)
+    expect(moving.reload.column).to eq(doing)
+  end
+
   it 'returns 404 moving a card on a board the user cannot access' do
     other = create(:user, account: account, role: :agent)
     c = todo.cards.create!(title: 'x', position: 0)

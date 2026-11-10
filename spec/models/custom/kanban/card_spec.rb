@@ -24,19 +24,24 @@ RSpec.describe Custom::Kanban::Card do
 
   describe 'assignees' do
     let(:member) { create(:user, account: account) }
-    let(:outsider) { create(:user, account: account) }
 
     before { board.members.create!(user: member) }
 
-    it 'accepts assignees who are board members' do
+    it 'has many assignees through the join table' do
       card = column.cards.create!(title: 'T', assignee_ids: [member.id])
       expect(card.assignees).to contain_exactly(member)
     end
 
-    it 'rejects an assignee who is not a board member' do
-      card = column.cards.new(title: 'T', assignee_ids: [outsider.id])
-      expect(card).not_to be_valid
-      expect(card.errors[:assignees]).to be_present
+    # Board-membership of assignees is enforced at the controller (the only write
+    # path), not in the model: a model validation here would also run during the
+    # position resequencing in #move and reject unrelated saves when a card still
+    # carries an assignee who is no longer a member. See the cards controller spec.
+    it 'does not reject a save when a card carries a non-member assignee' do
+      outsider = create(:user, account: account)
+      card = column.cards.create!(title: 'T', assignee_ids: [member.id])
+      Custom::Kanban::CardAssignee.create!(card: card, user: outsider)
+      card.reload.title = 'renamed'
+      expect(card.save).to be(true)
     end
   end
 end
