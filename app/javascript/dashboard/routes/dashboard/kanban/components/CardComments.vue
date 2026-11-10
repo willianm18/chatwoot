@@ -2,6 +2,9 @@
 import { ref } from 'vue';
 import { useStore, useMapGetter } from 'dashboard/composables/store';
 import { useI18n } from 'vue-i18n';
+import FullEditor from 'dashboard/components/widgets/WootWriter/FullEditor.vue';
+import { ARTICLE_EDITOR_MENU_OPTIONS } from 'dashboard/constants/editor';
+import { useMessageFormatter } from 'shared/composables/useMessageFormatter';
 
 const props = defineProps({
   boardId: { type: [String, Number], required: true },
@@ -12,7 +15,9 @@ const props = defineProps({
 const store = useStore();
 const { t } = useI18n();
 const currentUser = useMapGetter('getCurrentUser');
+const { formatMessage } = useMessageFormatter();
 const draft = ref('');
+const editorKey = ref(0); // bump to reset the editor after sending
 
 const canManage = comment =>
   comment.author_id === currentUser.value.id || props.isOwner;
@@ -25,6 +30,7 @@ const add = async () => {
     content: draft.value.trim(),
   });
   draft.value = '';
+  editorKey.value += 1;
 };
 
 const remove = comment =>
@@ -58,23 +64,26 @@ const remove = comment =>
             {{ t('KANBAN.COMMENTS.DELETE') }}
           </button>
         </div>
-        <p class="text-sm text-n-slate-12 whitespace-pre-wrap">
-          {{ comment.content }}
-        </p>
+        <div
+          class="text-sm prose-sm text-n-slate-12 max-w-none"
+          v-html="formatMessage(comment.content, false, false)"
+        />
       </li>
     </ul>
     <p v-else class="text-xs text-n-slate-10">
       {{ t('KANBAN.COMMENTS.EMPTY') }}
     </p>
-    <div class="flex gap-2">
-      <input
+    <div class="flex flex-col gap-2">
+      <FullEditor
         v-model="draft"
+        :editor-id="`kanban-comment-${card.id}-${editorKey}`"
         :placeholder="t('KANBAN.COMMENTS.PLACEHOLDER')"
-        class="flex-1 px-3 py-2 text-sm border rounded-lg border-n-weak bg-n-alpha-black1 text-n-slate-12"
-        @keyup.enter="add"
+        :enabled-menu-options="ARTICLE_EDITOR_MENU_OPTIONS"
+        :autofocus="false"
+        class="px-3 py-2 text-sm border rounded-lg border-n-weak bg-n-alpha-black1 text-n-slate-12"
       />
       <button
-        class="px-3 py-1.5 text-sm text-white rounded-lg bg-n-brand"
+        class="self-end px-3 py-1.5 text-sm text-white rounded-lg bg-n-brand"
         @click="add"
       >
         {{ t('KANBAN.COMMENTS.SEND') }}
