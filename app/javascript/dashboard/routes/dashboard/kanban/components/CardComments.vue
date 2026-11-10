@@ -76,7 +76,7 @@ const remove = comment =>
         :placeholder="t('KANBAN.COMMENTS.PLACEHOLDER')"
         :enabled-menu-options="ARTICLE_EDITOR_MENU_OPTIONS"
         autofocus
-        class="px-3 py-2 text-sm border rounded-lg border-n-weak bg-n-alpha-black1 text-n-slate-12"
+        class="px-3 py-2 text-sm border rounded-lg border-n-weak bg-n-alpha-black1 text-n-slate-12 [&_.ProseMirror-woot-style]:min-h-[8rem]"
       />
       <div class="flex items-center self-end gap-2">
         <button

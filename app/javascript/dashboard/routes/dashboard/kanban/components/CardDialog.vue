@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
 import { vOnClickOutside } from '@vueuse/components';
+import { useResizeObserver } from '@vueuse/core';
 import { useStore, useMapGetter } from 'dashboard/composables/store';
 import { useI18n } from 'vue-i18n';
 import { useMessageFormatter } from 'shared/composables/useMessageFormatter';
@@ -32,6 +33,18 @@ const currentBoard = useMapGetter('kanban/getCurrentBoard');
 // comment composer). The editor keeps its ProseMirror view in a module-level
 // variable, so two simultaneous instances would write to the same view.
 const activeEditor = ref(null);
+
+// Collapsed description preview with a "show more" toggle. Height-based (not
+// character-based) so it also works when the description contains images; the
+// resize observer re-measures when images finish loading.
+const descriptionRef = ref(null);
+const descriptionExpanded = ref(false);
+const isDescriptionOverflowing = ref(false);
+useResizeObserver(descriptionRef, () => {
+  const el = descriptionRef.value;
+  if (!el) return;
+  isDescriptionOverflowing.value = el.scrollHeight > el.clientHeight + 4;
+});
 
 // Live card: re-reads from the store after every refetch so new comments /
 // attachments show without reopening the dialog. Falls back to the prop so
@@ -66,6 +79,7 @@ watch(
   () => props.card,
   card => {
     activeEditor.value = null;
+    descriptionExpanded.value = false;
     form.value = card
       ? {
           title: card.title,
@@ -226,15 +240,30 @@ const remove = async () => {
             :placeholder="t('KANBAN.CARD.DESCRIPTION')"
             :enabled-menu-options="ARTICLE_EDITOR_MENU_OPTIONS"
             autofocus
-            class="px-3 py-2 text-sm border rounded-lg border-n-weak bg-n-alpha-black1 text-n-slate-12"
+            class="px-3 py-2 text-sm border rounded-lg border-n-weak bg-n-alpha-black1 text-n-slate-12 [&_.ProseMirror-woot-style]:min-h-[14rem]"
           />
-          <!-- eslint-disable-next-line vue/no-v-html -->
-          <div
-            v-else-if="form.description"
-            class="px-3 py-2 text-sm prose-sm rounded-lg cursor-text text-n-slate-12 max-w-none bg-n-alpha-black1 hover:bg-n-alpha-black2"
-            @click="activeEditor = 'description'"
-            v-html="formatMessage(form.description, false, false)"
-          />
+          <div v-else-if="form.description" class="flex flex-col gap-1">
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <div
+              ref="descriptionRef"
+              class="px-3 py-2 text-xs prose-sm leading-relaxed rounded-lg cursor-text text-n-slate-12 max-w-none bg-n-alpha-black1 hover:bg-n-alpha-black2"
+              :class="descriptionExpanded ? '' : 'max-h-40 overflow-hidden'"
+              @click="activeEditor = 'description'"
+              v-html="formatMessage(form.description, false, false)"
+            />
+            <button
+              v-if="isDescriptionOverflowing || descriptionExpanded"
+              type="button"
+              class="self-start text-xs text-n-brand"
+              @click.stop="descriptionExpanded = !descriptionExpanded"
+            >
+              {{
+                descriptionExpanded
+                  ? t('COMPONENTS.SHOW_MORE_BLOCK.SHOW_LESS')
+                  : t('COMPONENTS.SHOW_MORE_BLOCK.SHOW_MORE')
+              }}
+            </button>
+          </div>
           <button
             v-else
             type="button"
@@ -261,7 +290,7 @@ const remove = async () => {
       </div>
 
       <!-- Right column: comments -->
-      <div v-if="liveCard" class="flex flex-col min-w-0 shrink-0 md:w-72">
+      <div v-if="liveCard" class="flex flex-col min-w-0 shrink-0 md:w-96">
         <CardComments
           :board-id="boardId"
           :card="liveCard"
