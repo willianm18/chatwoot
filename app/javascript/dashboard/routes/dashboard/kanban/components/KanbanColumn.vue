@@ -13,6 +13,7 @@ const props = defineProps({
   // so the draggable list stays the full, stable column.cards array.
   visibleCardIds: { type: Array, required: true },
   labels: { type: Array, default: () => [] },
+  members: { type: Array, default: () => [] },
 });
 const emit = defineEmits(['cardMoved', 'addCard', 'openCard']);
 const store = useStore();
@@ -70,6 +71,18 @@ const onChange = event => {
         @keyup.enter="renameColumn"
         @blur="renameColumn"
       />
+      <span
+        class="px-1.5 text-xs rounded-full text-n-slate-10 bg-n-alpha-black2"
+      >
+        {{ column.cards.length }}
+      </span>
+      <button
+        class="shrink-0 text-n-slate-10 hover:text-n-slate-12"
+        :title="t('KANBAN.NEW_CARD')"
+        @click="$emit('addCard', column)"
+      >
+        <Icon icon="i-lucide-plus" class="size-3.5" />
+      </button>
       <button
         class="shrink-0 text-n-slate-10 hover:text-n-ruby-11"
         :title="t('KANBAN.COLUMN.DELETE')"
@@ -90,6 +103,7 @@ const onChange = event => {
           v-show="visibleCardIds.includes(element.id)"
           :card="element"
           :labels="labels"
+          :members="members"
           @open="$emit('openCard', element)"
         />
       </template>
