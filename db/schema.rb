@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_11_09_151230) do
+ActiveRecord::Schema[7.2].define(version: 2026_11_10_120000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1170,6 +1170,15 @@ ActiveRecord::Schema[7.2].define(version: 2026_11_09_151230) do
     t.index ["account_id"], name: "index_custom_kanban_boards_on_account_id"
   end
 
+  create_table "custom_kanban_card_assignees", force: :cascade do |t|
+    t.bigint "custom_kanban_card_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["custom_kanban_card_id", "user_id"], name: "index_kanban_card_assignees_on_card_and_user", unique: true
+    t.index ["custom_kanban_card_id"], name: "index_kanban_card_assignees_on_card"
+  end
+
   create_table "custom_kanban_card_labels", force: :cascade do |t|
     t.bigint "custom_kanban_card_id", null: false
     t.bigint "custom_kanban_label_id", null: false
@@ -1191,7 +1200,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_11_09_151230) do
     t.bigint "custom_kanban_column_id", null: false
     t.string "title", null: false
     t.text "description"
-    t.bigint "assignee_id"
     t.date "due_date"
     t.integer "position", default: 0, null: false
     t.bigint "created_by_id"
