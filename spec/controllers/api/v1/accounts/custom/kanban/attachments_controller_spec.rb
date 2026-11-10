@@ -20,6 +20,9 @@ RSpec.describe 'Kanban attachments API', type: :request do
     expect(response).to have_http_status(:success)
     expect(card.reload.files.count).to eq(1)
     expect(card.files.last.blob.metadata['uploaded_by']).to eq(member.id)
+    # The rendered card must expose the attachment (regression: jbuilder returned []).
+    expect(response.parsed_body['attachments'].size).to eq(1)
+    expect(response.parsed_body['attachments'].first['filename']).to eq('avatar.png')
   end
 
   it 'forbids a non-uploader non-owner from removing' do
