@@ -21,4 +21,22 @@ RSpec.describe Custom::Kanban::Card do
     card = column.cards.create!(title: 'x', position: 0)
     expect(card.board).to eq(board)
   end
+
+  describe 'assignees' do
+    let(:member) { create(:user, account: account) }
+    let(:outsider) { create(:user, account: account) }
+
+    before { board.members.create!(user: member) }
+
+    it 'accepts assignees who are board members' do
+      card = column.cards.create!(title: 'T', assignee_ids: [member.id])
+      expect(card.assignees).to contain_exactly(member)
+    end
+
+    it 'rejects an assignee who is not a board member' do
+      card = column.cards.new(title: 'T', assignee_ids: [outsider.id])
+      expect(card).not_to be_valid
+      expect(card.errors[:assignees]).to be_present
+    end
+  end
 end
