@@ -3,6 +3,7 @@ import { ref, watch } from 'vue';
 import draggable from 'vuedraggable';
 import { useStore } from 'dashboard/composables/store';
 import { useI18n } from 'vue-i18n';
+import Icon from 'dashboard/components-next/icon/Icon.vue';
 import KanbanCard from './KanbanCard.vue';
 
 const props = defineProps({
@@ -38,6 +39,15 @@ const renameColumn = () => {
   });
 };
 
+const deleteColumn = () => {
+  // eslint-disable-next-line no-alert
+  if (!window.confirm(t('KANBAN.COLUMN.DELETE_CONFIRM'))) return;
+  store.dispatch('kanban/deleteColumn', {
+    boardId: props.boardId,
+    id: props.column.id,
+  });
+};
+
 const onChange = event => {
   const change = event.added || event.moved;
   if (!change) return;
@@ -53,17 +63,26 @@ const onChange = event => {
   <div
     class="flex flex-col gap-2 p-2 w-72 shrink-0 rounded-xl bg-n-alpha-black1"
   >
-    <input
-      v-model="name"
-      class="px-1 text-sm font-medium bg-transparent rounded text-n-slate-12 hover:bg-n-alpha-black1 focus:bg-n-alpha-black1"
-      @keyup.enter="renameColumn"
-      @blur="renameColumn"
-    />
+    <div class="flex items-center gap-1">
+      <input
+        v-model="name"
+        class="flex-1 min-w-0 px-1 text-sm font-medium bg-transparent rounded text-n-slate-12 hover:bg-n-alpha-black2 focus:bg-n-alpha-black2"
+        @keyup.enter="renameColumn"
+        @blur="renameColumn"
+      />
+      <button
+        class="shrink-0 text-n-slate-10 hover:text-n-ruby-11"
+        :title="t('KANBAN.COLUMN.DELETE')"
+        @click="deleteColumn"
+      >
+        <Icon icon="i-lucide-trash-2" class="size-3.5" />
+      </button>
+    </div>
     <draggable
       :list="column.cards"
       group="kanban-cards"
       item-key="id"
-      class="flex flex-col gap-2 min-h-[8px]"
+      class="flex flex-col flex-1 gap-2 min-h-[80px]"
       @change="onChange"
     >
       <template #item="{ element }">

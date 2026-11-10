@@ -11,6 +11,10 @@
     "NEW_COLUMN": "Add column",
     "COLUMN_NAME": "Column name",
     "NEW_CARD": "Add a card",
+    "COLUMN": {
+      "DELETE": "Delete column",
+      "DELETE_CONFIRM": "Delete this column and all its cards?"
+    },
     "CARD": {
       "TITLE": "Title",
       "DESCRIPTION": "Description",
