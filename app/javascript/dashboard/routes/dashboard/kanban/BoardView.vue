@@ -31,6 +31,9 @@ const onlyMine = ref(false);
 
 onMounted(() => {
   store.dispatch('kanban/fetchBoard', props.boardId);
+  // The members dialog lets the owner add any account agent, so it needs the
+  // full agents list (board filters use the board's members instead).
+  store.dispatch('agents/get');
 });
 
 const visibleCardIds = column =>
