@@ -202,8 +202,9 @@ fluxo da skill `sync-fork` não se aplicam como estão.
   Reverter = tirar a linha do `perform`.
 - **Kanban nativo (Tarefas de equipe)** — quadros estilo Trello com cartões criados pelos usuários, atribuição
   aos próprios agentes, etiquetas por quadro, prazo, filtros e drag-and-drop. **Substitui** o paywall do Kanban
-  Pro da fazer.ai (reusa ícone/rota `kanban_view`). Acesso por quadro: membro OU `administrator` da conta; só o
-  dono gerencia membros/apaga. Sem tempo real na V1 (recarrega ao mudar). Tabelas novas `custom_kanban_*`
+  Pro da fazer.ai (reusa ícone/rota `kanban_view`). Acesso por quadro: **somente membros** (o papel na conta
+  não dá visibilidade — quadro é privado aos membros; `custom.N`, 2026-11-10); só o dono gerencia membros/apaga.
+  Sem tempo real na V1 (recarrega ao mudar). Tabelas novas `custom_kanban_*`
   (boards, board_members, columns, cards, labels, card_labels) e models `Custom::Kanban::*` — tudo nosso.
   Edições no upstream:
   - `config/routes.rb` — bloco `namespace :custom { namespace :kanban { resources :boards … } }` (member/collection
@@ -239,9 +240,17 @@ fluxo da skill `sync-fork` não se aplicam como estão.
   `controllers/.../kanban/{comments,attachments}_controller.rb`, `views/.../kanban/{comments,attachments}/
   show.json.jbuilder`, `models/custom/kanban/card_comment.rb`, `routes/dashboard/kanban/components/
   {CardComments,CardAttachments}.vue`, actions no store (`createComment`/.../`onBoardUpdated`), i18n
-  `KANBAN.COMMENTS.*`/`KANBAN.ATTACHMENTS.*`. "Quem anexou" = `blob.metadata['uploaded_by']`; admin não-membro
-  não recebe tempo real (recarrega). Design/plano em `docs/superpowers/` (`*-kanban-phase2-*`). Reverter =
-  dropar a tabela, tirar as rotas/`after_action`/linha do actionCable e apagar os arquivos novos.
+  `KANBAN.COMMENTS.*`/`KANBAN.ATTACHMENTS.*`. "Quem anexou" = `blob.metadata['uploaded_by']`. O tempo real vai
+  só para os `member_users` do quadro (quadro privado; ver abaixo). Design/plano em `docs/superpowers/`
+  (`*-kanban-phase2-*`). Reverter = dropar a tabela, tirar as rotas/`after_action`/linha do actionCable e apagar
+  os arquivos novos.
+  - **Quadros privados** (`custom.N`, 2026-11-10) — acesso a um quadro é **só de seus membros**; o papel na
+    conta (`administrator`/`agent`) deixou de dar visibilidade. Edições mínimas no upstream (ambas nossas):
+    `app/models/custom/kanban/board.rb` (scope `accessible_by` sem a cláusula de admin) e
+    `app/controllers/api/v1/accounts/custom/kanban/base_controller.rb` (`board_update_tokens` → só
+    `member_users`). Specs invertidos (board/boards_controller/broadcast). Design em
+    `docs/superpowers/specs/2026-11-10-kanban-private-boards-design.md`. Reverter = restaurar a cláusula de
+    admin no scope e o cruzamento com `administrator` no broadcast.
 
 ## Gotchas conhecidos do fork
 

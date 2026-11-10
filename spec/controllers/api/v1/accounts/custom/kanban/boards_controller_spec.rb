@@ -34,12 +34,13 @@ RSpec.describe 'Kanban boards API', type: :request do
       expect(ids).to contain_exactly(mine.id)
     end
 
-    it 'lists every board for an administrator' do
+    it 'does not list boards a non-member administrator is not a member of' do
       a = create_board(owner)
       b = create_board(outsider)
       get "/api/v1/accounts/#{account.id}/custom/kanban/boards", headers: admin.create_new_auth_token, as: :json
       ids = response.parsed_body['payload'].map { |x| x['id'] }
-      expect(ids).to include(a.id, b.id)
+      expect(ids).not_to include(a.id)
+      expect(ids).not_to include(b.id)
     end
   end
 
