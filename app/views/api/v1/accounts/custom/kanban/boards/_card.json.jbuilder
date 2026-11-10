@@ -13,12 +13,10 @@ json.comments card.comments.includes(:user) do |comment|
   json.content comment.content
   json.created_at comment.created_at
 end
-json.attachments card.files.map do |file|
-  {
-    id: file.id,
-    filename: file.filename.to_s,
-    file_url: card.file_url(file),
-    content_type: file.content_type,
-    is_image: file.content_type.to_s.start_with?('image/')
-  }
+json.attachments card.files do |file|
+  json.id file.id
+  json.filename file.filename.to_s
+  json.file_url card.file_url(file)
+  json.content_type file.content_type
+  json.is_image file.content_type.to_s.start_with?('image/')
 end
