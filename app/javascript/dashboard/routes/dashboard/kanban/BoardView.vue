@@ -32,12 +32,14 @@ onMounted(() => {
   store.dispatch('agents/get');
 });
 
-const visibleCards = column =>
-  column.cards.filter(
-    card =>
-      (!assigneeFilter.value || card.assignee_id === assigneeFilter.value) &&
-      (!labelFilter.value || card.label_ids?.includes(labelFilter.value))
-  );
+const visibleCardIds = column =>
+  column.cards
+    .filter(
+      card =>
+        (!assigneeFilter.value || card.assignee_id === assigneeFilter.value) &&
+        (!labelFilter.value || card.label_ids?.includes(labelFilter.value))
+    )
+    .map(card => card.id);
 
 const onCardMoved = ({ cardId, toColumnId, position }) =>
   store.dispatch('kanban/moveCard', { cardId, toColumnId, position });
@@ -111,8 +113,9 @@ const clearFilters = () => {
       <KanbanColumn
         v-for="column in columns"
         :key="column.id"
+        :board-id="boardId"
         :column="column"
-        :cards="visibleCards(column)"
+        :visible-card-ids="visibleCardIds(column)"
         :labels="labels"
         @card-moved="onCardMoved"
         @add-card="addCard"

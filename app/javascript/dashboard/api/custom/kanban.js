@@ -100,10 +100,10 @@ class KanbanBoardsAPI extends ApiClient {
   addAttachment(boardId, cardId, fileBlob) {
     const formData = new FormData();
     formData.append('file', fileBlob);
+    // Let the browser set multipart/form-data with the correct boundary.
     return axios.post(
       `${this.nested(boardId, 'cards')}/${cardId}/attachments`,
-      formData,
-      { headers: { 'Content-Type': 'multipart/form-data' } }
+      formData
     );
   }
 

@@ -2,8 +2,8 @@ import { throwErrorMessage } from 'dashboard/store/utils/api';
 import types from '../../mutation-types';
 import KanbanAPI from '../../../api/custom/kanban';
 
-// [fazer.ai fork] Native team-tasks Kanban store. No real-time in V1: mutating
-// actions refetch the current board after the write.
+// [fazer.ai fork] Native team-tasks Kanban store. Mutating actions refetch the
+// current board after the write; onBoardUpdated handles real-time cable events.
 const state = {
   boards: [],
   currentBoard: null,
@@ -51,28 +51,21 @@ export const actions = {
       commit(types.SET_KANBAN_UI_FLAG, { fetchingItem: false });
     }
   },
+  // vuedraggable has already moved the card between the column arrays (bound via
+  // :list); here we only persist the new order and reconcile from the server on
+  // failure.
   moveCard: async (
-    { state: s, commit, dispatch },
+    { state: s, dispatch },
     { cardId, toColumnId, position }
   ) => {
-    const board = s.currentBoard;
-    // Optimistic local move so the drag feels instant.
-    let moved;
-    board.columns.forEach(col => {
-      const idx = col.cards.findIndex(c => c.id === cardId);
-      if (idx !== -1) [moved] = col.cards.splice(idx, 1);
-    });
-    const target = board.columns.find(c => c.id === toColumnId);
-    if (moved && target)
-      target.cards.splice(position, 0, { ...moved, column_id: toColumnId });
-    commit(types.SET_KANBAN_CURRENT_BOARD, { ...board });
+    const boardId = s.currentBoard?.id;
     try {
-      await KanbanAPI.moveCard(board.id, cardId, {
+      await KanbanAPI.moveCard(boardId, cardId, {
         columnId: toColumnId,
         position,
       });
     } catch (error) {
-      await dispatch('fetchBoard', board.id); // reconcile on failure
+      await dispatch('fetchBoard', boardId);
       throw error;
     }
   },
