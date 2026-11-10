@@ -111,7 +111,10 @@ class ActionCableConnector extends BaseActionCableConnector {
       'voice_call.outbound_connected': this.onVoiceCallOutboundConnected,
       'voice_call.outbound_accepted': this.onVoiceCallOutboundAccepted,
       'voice_call.ended': this.onVoiceCallEnded,
-      'kanban.board.updated': this.onKanbanBoardUpdated,
+      // Inlined (not a class-field reference) so the handler is guaranteed
+      // defined when this.events is built, independent of field-init order.
+      'kanban.board.updated': data =>
+        this.app.$store.dispatch('kanban/onBoardUpdated', data.board_id),
     };
   }
 
@@ -766,10 +769,6 @@ class ActionCableConnector extends BaseActionCableConnector {
     }
     store.setCallActive(data.call_id);
     armOutboundRecorder();
-  };
-
-  onKanbanBoardUpdated = data => {
-    this.app.$store.dispatch('kanban/onBoardUpdated', data.board_id);
   };
 
   // eslint-disable-next-line class-methods-use-this
