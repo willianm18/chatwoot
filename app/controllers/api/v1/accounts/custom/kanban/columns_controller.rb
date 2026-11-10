@@ -32,6 +32,6 @@ class Api::V1::Accounts::Custom::Kanban::ColumnsController < Api::V1::Accounts::
   end
 
   def column_params
-    params.require(:column).permit(:name)
+    params.require(:column).permit(:name, :custom_color)
   end
 end

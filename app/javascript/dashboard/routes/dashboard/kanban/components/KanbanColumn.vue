@@ -1,9 +1,11 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
+import { vOnClickOutside } from '@vueuse/components';
 import draggable from 'vuedraggable';
 import { useStore } from 'dashboard/composables/store';
 import { useI18n } from 'vue-i18n';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
+import InboxColorPicker from 'dashboard/components/custom/InboxColorPicker.vue';
 import KanbanCard from './KanbanCard.vue';
 
 const props = defineProps({
@@ -58,13 +60,38 @@ const onChange = event => {
     position: change.newIndex,
   });
 };
+
+const showColorPicker = ref(false);
+
+// Tinted header band when a color is set (dynamic data color → inline style,
+// the accepted exception used by label pills and the per-inbox color).
+const headerStyle = computed(() =>
+  props.column.custom_color
+    ? {
+        backgroundColor: `${props.column.custom_color}26`,
+        borderBottom: `1px solid ${props.column.custom_color}`,
+      }
+    : {}
+);
+
+const setColor = color => {
+  showColorPicker.value = false;
+  store.dispatch('kanban/updateColumn', {
+    boardId: props.boardId,
+    id: props.column.id,
+    custom_color: color,
+  });
+};
 </script>
 
 <template>
   <div
     class="flex flex-col gap-2 p-2 w-72 shrink-0 rounded-xl bg-n-alpha-black1"
   >
-    <div class="flex items-center gap-1">
+    <div
+      class="flex items-center gap-1 px-1 py-0.5 -mx-1 -mt-1 rounded-t-xl"
+      :style="headerStyle"
+    >
       <input
         v-model="name"
         class="flex-1 min-w-0 px-1 text-sm font-medium bg-transparent rounded text-n-slate-12 hover:bg-n-alpha-black2 focus:bg-n-alpha-black2"
@@ -76,6 +103,25 @@ const onChange = event => {
       >
         {{ column.cards.length }}
       </span>
+      <div class="relative shrink-0">
+        <button
+          class="text-n-slate-10 hover:text-n-slate-12"
+          :title="t('KANBAN.COLUMN.COLOR')"
+          @click="showColorPicker = !showColorPicker"
+        >
+          <Icon icon="i-lucide-palette" class="size-3.5" />
+        </button>
+        <div
+          v-if="showColorPicker"
+          v-on-click-outside="() => (showColorPicker = false)"
+          class="absolute z-10 p-2 mt-1 border rounded-lg shadow-lg ltr:right-0 rtl:left-0 bg-n-solid-1 border-n-weak"
+        >
+          <InboxColorPicker
+            :model-value="column.custom_color ?? null"
+            @update:model-value="setColor"
+          />
+        </div>
+      </div>
       <button
         class="shrink-0 text-n-slate-10 hover:text-n-slate-12"
         :title="t('KANBAN.NEW_CARD')"

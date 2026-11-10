@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_11_10_120000) do
+ActiveRecord::Schema[7.2].define(version: 2026_11_10_160000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1214,6 +1214,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_11_10_120000) do
     t.integer "position", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "custom_color"
     t.index ["custom_kanban_board_id"], name: "index_custom_kanban_columns_on_custom_kanban_board_id"
   end
 
