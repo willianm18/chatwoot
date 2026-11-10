@@ -23,6 +23,16 @@ RSpec.describe 'Kanban real-time broadcast', type: :request do
     expect(response).to have_http_status(:success)
   end
 
+  it 'also broadcasts to account administrators who are not members' do
+    admin = create(:user, account: account, role: :administrator)
+    received = nil
+    allow(ActionCableBroadcastJob).to receive(:perform_later) { |tokens, _event, _data| received = tokens }
+    post "/api/v1/accounts/#{account.id}/custom/kanban/boards/#{board.id}/cards",
+         params: { card: { column_id: column.id, title: 'new' } }, headers: owner.create_new_auth_token, as: :json
+    expect(response).to have_http_status(:success)
+    expect(received).to include(admin.pubsub_token)
+  end
+
   it 'does not broadcast on a failed (404) request' do
     expect(ActionCableBroadcastJob).not_to receive(:perform_later)
     other = create(:user, account: account, role: :agent)
