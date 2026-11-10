@@ -6,6 +6,8 @@ import { useI18n } from 'vue-i18n';
 import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
 import Avatar from 'dashboard/components-next/avatar/Avatar.vue';
+import FullEditor from 'dashboard/components/widgets/WootWriter/FullEditor.vue';
+import { ARTICLE_EDITOR_MENU_OPTIONS } from 'dashboard/constants/editor';
 import AssigneePicker from './AssigneePicker.vue';
 import CardComments from './CardComments.vue';
 import CardAttachments from './CardAttachments.vue';
@@ -209,10 +211,12 @@ const remove = async () => {
           <h4 class="text-xs font-medium uppercase text-n-slate-10">
             {{ t('KANBAN.CARD.DESCRIPTION') }}
           </h4>
-          <textarea
+          <FullEditor
             v-model="form.description"
+            :editor-id="`kanban-desc-${card?.id ?? 'new'}`"
             :placeholder="t('KANBAN.CARD.DESCRIPTION')"
-            rows="4"
+            :enabled-menu-options="ARTICLE_EDITOR_MENU_OPTIONS"
+            :autofocus="false"
             class="px-3 py-2 text-sm border rounded-lg border-n-weak bg-n-alpha-black1 text-n-slate-12"
           />
         </section>
