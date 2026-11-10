@@ -272,6 +272,22 @@ fluxo da skill `sync-fork` não se aplicam como estão.
     `docs/superpowers/` (`specs/2026-11-10-kanban-visual-refresh-multi-assignee-design.md`,
     `plans/2026-11-10-kanban-visual-refresh-multi-assignee.md`). Reverter = dropar a tabela (restaurar
     `assignee_id`), reverter os arquivos editados e apagar os novos.
+  - **Fase 4 (polish de UI)** (`custom.N`, 2026-11-10) — três melhorias: (1) **cor por coluna** — coluna nova
+    `custom_kanban_columns.custom_color` (string, nullable), validada contra `Custom::InboxCustomColor::PALETTE`
+    (reusa a paleta da "cor por caixa", sem 3ª cópia no backend); o cabeçalho da coluna ganha faixa tingida
+    (`:style` dinâmico) + seletor que **reusa `components/custom/InboxColorPicker.vue`** num popover; editável por
+    qualquer membro. (2) **filtros compactos** — cabeçalho do quadro numa linha só (só restyle no `BoardView`).
+    (3) **editor rico com imagem inline** na descrição e nos comentários — **reusa `FullEditor.vue`** (ProseMirror,
+    menu `ARTICLE_EDITOR_MENU_OPTIONS`, já faz colar/upload de imagem → `/api/v1/accounts/:id/upload` → markdown
+    `![](url)`); exibição dos comentários via `useMessageFormatter`/`MessageFormatter` (`v-html`). Os campos
+    `description` e `content` (ambos `text`) passam a guardar **markdown** — **sem migration de dados**, texto puro
+    antigo é markdown válido. Edições upstream: só `db/schema.rb` (coluna `custom_color` + versão
+    `2026_11_10_160000`; dev com Ruby confere o schema regenerado). Arquivos editados (nossos):
+    `models/custom/kanban/column.rb`, `controllers/.../kanban/columns_controller.rb`,
+    `views/.../boards/_column.json.jbuilder`, `routes/dashboard/kanban/{BoardView,components/{KanbanColumn,
+    CardDialog,CardComments}}.vue`, `kanban.json` (chave `COLUMN.COLOR`, 3 locais). Arquivo novo: migration
+    `...add_custom_color_to_kanban_columns`. Specs de backend só na CI. Design/plano em `docs/superpowers/`
+    (`*-kanban-ui-polish-phase4*`). Reverter = dropar a coluna `custom_color`, reverter os arquivos editados.
 
 ## Gotchas conhecidos do fork
 
