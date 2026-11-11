@@ -86,7 +86,7 @@ const clearFilters = () => {
       </h1>
       <select
         v-model="assigneeFilter"
-        class="px-2 py-1 text-xs border rounded-lg cursor-pointer border-n-weak bg-n-alpha-black1 text-n-slate-11 hover:border-n-slate-6"
+        class="inline-block w-44 h-9 mb-0 text-xs cursor-pointer text-n-slate-11"
       >
         <option :value="null">{{ t('KANBAN.FILTERS.ASSIGNEE') }}</option>
         <option
@@ -99,7 +99,7 @@ const clearFilters = () => {
       </select>
       <select
         v-model="labelFilter"
-        class="px-2 py-1 text-xs border rounded-lg cursor-pointer border-n-weak bg-n-alpha-black1 text-n-slate-11 hover:border-n-slate-6"
+        class="inline-block w-44 h-9 mb-0 text-xs cursor-pointer text-n-slate-11"
       >
         <option :value="null">{{ t('KANBAN.FILTERS.LABEL') }}</option>
         <option v-for="label in labels" :key="label.id" :value="label.id">
