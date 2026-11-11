@@ -97,6 +97,10 @@ export const actions = {
     await KanbanAPI.createLabel(boardId, label);
     await dispatch('fetchBoard', boardId);
   },
+  updateLabel: async ({ dispatch }, { boardId, id, ...label }) => {
+    await KanbanAPI.updateLabel(boardId, id, label);
+    await dispatch('fetchBoard', boardId);
+  },
   deleteLabel: async ({ dispatch }, { boardId, id }) => {
     await KanbanAPI.deleteLabel(boardId, id);
     await dispatch('fetchBoard', boardId);

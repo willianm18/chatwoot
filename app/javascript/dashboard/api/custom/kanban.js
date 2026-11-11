@@ -59,6 +59,12 @@ class KanbanBoardsAPI extends ApiClient {
     return axios.post(this.nested(boardId, 'labels'), { label: data });
   }
 
+  updateLabel(boardId, id, data) {
+    return axios.patch(`${this.nested(boardId, 'labels')}/${id}`, {
+      label: data,
+    });
+  }
+
   deleteLabel(boardId, id) {
     return axios.delete(`${this.nested(boardId, 'labels')}/${id}`);
   }
