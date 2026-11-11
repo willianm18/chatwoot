@@ -19,4 +19,5 @@ json.attachments card.files do |file|
   json.file_url card.file_url(file)
   json.content_type file.content_type
   json.is_image file.content_type.to_s.start_with?('image/')
+  json.byte_size file.byte_size
 end

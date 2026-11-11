@@ -55,6 +55,17 @@ RSpec.describe 'Kanban cards API', type: :request do
     expect(moving.reload.column).to eq(doing)
   end
 
+  it 'includes the attachment byte size in the payload' do
+    card = todo.cards.create!(title: 'x', position: 0)
+    card.files.attach(
+      io: StringIO.new('hello'), filename: 'a.txt', content_type: 'text/plain'
+    )
+    get "/api/v1/accounts/#{account.id}/custom/kanban/boards/#{board.id}",
+        headers: owner.create_new_auth_token, as: :json
+    returned = response.parsed_body['columns'].flat_map { |c| c['cards'] }.find { |c| c['id'] == card.id }
+    expect(returned['attachments'].first['byte_size']).to eq(5)
+  end
+
   it 'returns 404 moving a card on a board the user cannot access' do
     other = create(:user, account: account, role: :agent)
     c = todo.cards.create!(title: 'x', position: 0)
