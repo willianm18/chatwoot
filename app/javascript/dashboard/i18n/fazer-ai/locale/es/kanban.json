@@ -22,6 +22,8 @@
       "ASSIGNEES": "Responsables",
       "IN_COLUMN": "en {column}",
       "ADD_DESCRIPTION": "Agregar una descripción…",
+      "SET_DUE_DATE": "Definir fecha",
+      "CLEAR_DUE_DATE": "Quitar fecha",
       "LABELS": "Etiquetas",
       "DUE_DATE": "Fecha límite",
       "SAVE": "Guardar",
