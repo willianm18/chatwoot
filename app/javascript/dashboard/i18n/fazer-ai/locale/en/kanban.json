@@ -22,6 +22,8 @@
       "ASSIGNEES": "Assignees",
       "IN_COLUMN": "in {column}",
       "ADD_DESCRIPTION": "Add a description…",
+      "SET_DUE_DATE": "Set due date",
+      "CLEAR_DUE_DATE": "Clear due date",
       "LABELS": "Labels",
       "DUE_DATE": "Due date",
       "SAVE": "Save",

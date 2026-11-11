@@ -22,6 +22,8 @@
       "ASSIGNEES": "Responsáveis",
       "IN_COLUMN": "em {column}",
       "ADD_DESCRIPTION": "Adicionar descrição…",
+      "SET_DUE_DATE": "Definir prazo",
+      "CLEAR_DUE_DATE": "Remover prazo",
       "LABELS": "Etiquetas",
       "DUE_DATE": "Prazo",
       "SAVE": "Salvar",

@@ -34,6 +34,9 @@ const currentBoard = useMapGetter('kanban/getCurrentBoard');
 // variable, so two simultaneous instances would write to the same view.
 const activeEditor = ref(null);
 
+// Due date reveals its picker on demand (a button until then, like Trello).
+const showDueDate = ref(false);
+
 // Collapsed description preview with a "show more" toggle. Height-based (not
 // character-based) so it also works when the description contains images; the
 // resize observer re-measures when images finish loading.
@@ -80,6 +83,7 @@ watch(
   card => {
     activeEditor.value = null;
     descriptionExpanded.value = false;
+    showDueDate.value = false;
     form.value = card
       ? {
           title: card.title,
@@ -97,6 +101,11 @@ const selectedAssignees = computed(() =>
   props.members.filter(m => form.value.assignee_ids.includes(m.user_id))
 );
 const showAssigneePicker = ref(false);
+
+const clearDueDate = () => {
+  form.value.due_date = null;
+  showDueDate.value = false;
+};
 
 const open = () => dialogRef.value?.open();
 defineExpose({ open });
@@ -141,15 +150,18 @@ const remove = async () => {
     :show-confirm-button="false"
     :show-cancel-button="false"
   >
-    <div class="flex flex-col gap-1 mb-4">
+    <div class="flex flex-col gap-2 mb-4">
+      <span
+        v-if="columnName"
+        class="self-start px-2 py-0.5 text-xs font-medium rounded-full text-n-slate-11 bg-n-alpha-black2"
+      >
+        {{ columnName }}
+      </span>
       <input
         v-model="form.title"
         :placeholder="t('KANBAN.CARD.TITLE')"
-        class="px-1 py-0.5 text-base font-medium bg-transparent rounded text-n-slate-12 hover:bg-n-alpha-black2 focus:bg-n-alpha-black2"
+        class="px-1 py-0.5 text-lg font-semibold bg-transparent rounded text-n-slate-12 hover:bg-n-alpha-black2 focus:bg-n-alpha-black2"
       />
-      <span v-if="columnName" class="px-1 text-xs text-n-slate-10">
-        {{ t('KANBAN.CARD.IN_COLUMN', { column: columnName }) }}
-      </span>
     </div>
 
     <div class="flex flex-col gap-6 md:flex-row">
@@ -178,7 +190,8 @@ const remove = async () => {
             <div class="relative">
               <button
                 type="button"
-                class="flex items-center justify-center border border-dashed rounded-full size-7 border-n-weak text-n-slate-10 hover:text-n-slate-12"
+                class="flex items-center justify-center rounded-full size-7 bg-n-alpha-black2 text-n-slate-11 hover:bg-n-alpha-black3 hover:text-n-slate-12"
+                :title="t('KANBAN.CARD.ASSIGNEES')"
                 @click="showAssigneePicker = !showAssigneePicker"
               >
                 <Icon icon="i-lucide-plus" class="size-4" />
@@ -222,11 +235,34 @@ const remove = async () => {
           <h4 class="text-xs font-medium uppercase text-n-slate-10">
             {{ t('KANBAN.CARD.DUE_DATE') }}
           </h4>
-          <input
-            v-model="form.due_date"
-            type="date"
-            class="self-start px-3 py-2 text-sm border rounded-lg border-n-weak bg-n-alpha-black1 text-n-slate-12"
-          />
+          <div
+            v-if="form.due_date || showDueDate"
+            class="flex items-center gap-2"
+          >
+            <input
+              v-model="form.due_date"
+              type="date"
+              class="px-3 py-2 text-sm border rounded-lg border-n-weak bg-n-alpha-black1 text-n-slate-12"
+            />
+            <button
+              v-if="form.due_date"
+              type="button"
+              class="text-n-slate-10 hover:text-n-ruby-11"
+              :title="t('KANBAN.CARD.CLEAR_DUE_DATE')"
+              @click="clearDueDate"
+            >
+              <Icon icon="i-lucide-x" class="size-4" />
+            </button>
+          </div>
+          <button
+            v-else
+            type="button"
+            class="self-start inline-flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg text-n-slate-11 bg-n-alpha-black2 hover:bg-n-alpha-black3"
+            @click="showDueDate = true"
+          >
+            <Icon icon="i-lucide-calendar" class="size-4" />
+            {{ t('KANBAN.CARD.SET_DUE_DATE') }}
+          </button>
         </section>
 
         <section class="flex flex-col gap-2">
