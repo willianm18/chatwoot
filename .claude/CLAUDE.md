@@ -288,6 +288,18 @@ fluxo da skill `sync-fork` não se aplicam como estão.
     CardDialog,CardComments}}.vue`, `kanban.json` (chave `COLUMN.COLOR`, 3 locais). Arquivo novo: migration
     `...add_custom_color_to_kanban_columns`. Specs de backend só na CI. Design/plano em `docs/superpowers/`
     (`*-kanban-ui-polish-phase4*`). Reverter = dropar a coluna `custom_color`, reverter os arquivos editados.
+  - **Fase 5 (redesign do diálogo do cartão, estilo Trello)** (`custom.N`, 2026-11-11) — barra de ação "Adicionar"
+    (Etiqueta · Data · Anexo) abaixo do título; **prazo em pill** (data + ✕, vermelho só quando vencido); **UI de
+    etiquetas** (`LabelPicker.vue` novo: criar/editar/excluir + toggle — o backend já tinha `labels`
+    create/update/destroy, faltava só `updateLabel` no store/API); **anexos reformulados** (miniatura/ícone + nome
+    + tamanho + botão "Adicionar anexo" no lugar do `<input file>` nativo — payload ganha `byte_size`); **composer
+    de comentário mais visível** (fundo/borda) e **scroll independente** (cartão e comentários rolam separados: o
+    diálogo vira `h-full` com cada coluna `overflow-y-auto`); **rodapé** Salvar/Excluir restilizado. Único arquivo
+    de backend: `_card.json.jbuilder` (`byte_size`). Arquivos nossos: novo `components/LabelPicker.vue`; editados
+    `components/{CardDialog,CardComments,CardAttachments}.vue`, `api/custom/kanban.js`,
+    `store/modules/custom/kanban.js`, `kanban.json` (chaves `ACTIONS.*`, `LABELS.*`, `ATTACHMENTS.ADD`; 3 locais).
+    Sem schema/rota nova. Checklist ficou **fora** (fase própria). Design/plano em `docs/superpowers/`
+    (`*-kanban-card-dialog-redesign*`). Reverter = reverter os arquivos editados e apagar o `LabelPicker`.
 
 ## Gotchas conhecidos do fork
 

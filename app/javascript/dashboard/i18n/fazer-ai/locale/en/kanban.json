@@ -45,9 +45,21 @@
     },
     "ATTACHMENTS": {
       "TITLE": "Attachments",
+      "ADD": "Add attachment",
       "REMOVE": "Remove",
       "EMPTY": "No attachments yet.",
       "TOO_LARGE": "File is too large (max 40 MB)."
+    },
+    "ACTIONS": {
+      "LABEL": "Label",
+      "DATE": "Date",
+      "ATTACHMENT": "Attachment"
+    },
+    "LABELS": {
+      "NEW": "Create label",
+      "EDIT": "Edit label",
+      "DELETE": "Delete label",
+      "NAME": "Label name"
     }
   }
 }

@@ -45,9 +45,21 @@
     },
     "ATTACHMENTS": {
       "TITLE": "Anexos",
+      "ADD": "Adicionar anexo",
       "REMOVE": "Remover",
       "EMPTY": "Ainda não há anexos.",
       "TOO_LARGE": "Arquivo muito grande (máx. 40 MB)."
+    },
+    "ACTIONS": {
+      "LABEL": "Etiqueta",
+      "DATE": "Data",
+      "ATTACHMENT": "Anexo"
+    },
+    "LABELS": {
+      "NEW": "Criar etiqueta",
+      "EDIT": "Editar etiqueta",
+      "DELETE": "Excluir etiqueta",
+      "NAME": "Nome da etiqueta"
     }
   }
 }

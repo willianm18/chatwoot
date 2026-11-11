@@ -63,46 +63,52 @@ const remove = comment =>
 </script>
 
 <template>
-  <div class="flex flex-col gap-2">
-    <h4 class="text-sm font-medium text-n-slate-12">
+  <div class="flex flex-col h-full gap-2 min-h-0">
+    <h4 class="text-sm font-medium shrink-0 text-n-slate-12">
       {{ t('KANBAN.COMMENTS.TITLE') }}
     </h4>
 
-    <!-- Composer: a placeholder until clicked, then the rich editor -->
-    <div v-if="active" class="flex flex-col gap-2">
-      <FullEditor
-        v-model="draft"
-        :editor-id="`kanban-comment-${card.id}-${editorKey}`"
-        :placeholder="t('KANBAN.COMMENTS.PLACEHOLDER')"
-        :enabled-menu-options="ARTICLE_EDITOR_MENU_OPTIONS"
-        autofocus
-        class="px-3 py-2 text-sm border rounded-lg border-n-weak bg-n-alpha-black1 text-n-slate-12 [&_.ProseMirror-woot-style]:min-h-[8rem]"
-      />
-      <div class="flex items-center self-end gap-2">
-        <button
-          class="text-sm text-n-slate-10 hover:text-n-slate-12"
-          @click="cancel"
-        >
-          {{ t('KANBAN.COMMENTS.CANCEL') }}
-        </button>
-        <button
-          class="px-3 py-1.5 text-sm text-white rounded-lg bg-n-brand"
-          @click="add"
-        >
-          {{ t('KANBAN.COMMENTS.SEND') }}
-        </button>
+    <!-- Composer fixed at the top: a placeholder until clicked, then the editor -->
+    <div class="shrink-0">
+      <div v-if="active" class="flex flex-col gap-2">
+        <FullEditor
+          v-model="draft"
+          :editor-id="`kanban-comment-${card.id}-${editorKey}`"
+          :placeholder="t('KANBAN.COMMENTS.PLACEHOLDER')"
+          :enabled-menu-options="ARTICLE_EDITOR_MENU_OPTIONS"
+          autofocus
+          class="px-3 py-2 text-sm border rounded-lg border-n-weak bg-n-alpha-black1 text-n-slate-12 [&_.ProseMirror-woot-style]:min-h-[8rem]"
+        />
+        <div class="flex items-center self-end gap-2">
+          <button
+            class="text-sm text-n-slate-10 hover:text-n-slate-12"
+            @click="cancel"
+          >
+            {{ t('KANBAN.COMMENTS.CANCEL') }}
+          </button>
+          <button
+            class="px-3 py-1.5 text-sm text-white rounded-lg bg-n-brand"
+            @click="add"
+          >
+            {{ t('KANBAN.COMMENTS.SEND') }}
+          </button>
+        </div>
       </div>
+      <button
+        v-else
+        type="button"
+        class="w-full px-3 py-2.5 text-sm rounded-lg text-start text-n-slate-11 bg-n-alpha-black2 border border-n-strong hover:bg-n-alpha-black3"
+        @click="emit('activate')"
+      >
+        {{ t('KANBAN.COMMENTS.PLACEHOLDER') }}
+      </button>
     </div>
-    <button
-      v-else
-      type="button"
-      class="px-3 py-2 text-sm rounded-lg text-start text-n-slate-10 border border-n-weak hover:bg-n-alpha-black2"
-      @click="emit('activate')"
-    >
-      {{ t('KANBAN.COMMENTS.PLACEHOLDER') }}
-    </button>
 
-    <ul v-if="sortedComments.length" class="flex flex-col gap-2">
+    <!-- Scrollable comment list -->
+    <ul
+      v-if="sortedComments.length"
+      class="flex flex-col flex-1 gap-2 overflow-y-auto min-h-0"
+    >
       <li
         v-for="comment in sortedComments"
         :key="comment.id"
@@ -132,7 +138,7 @@ const remove = comment =>
         />
       </li>
     </ul>
-    <p v-else class="text-xs text-n-slate-10">
+    <p v-else class="text-xs shrink-0 text-n-slate-10">
       {{ t('KANBAN.COMMENTS.EMPTY') }}
     </p>
   </div>
