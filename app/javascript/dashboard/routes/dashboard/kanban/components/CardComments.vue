@@ -33,6 +33,13 @@ const sortedComments = computed(() =>
 const formatStamp = iso =>
   iso ? format(parseISO(iso), 'd MMM yyyy, HH:mm') : '';
 
+// Inline images render small; clicking one opens it full-size in a new tab.
+const openImageInNewTab = event => {
+  if (event.target.tagName === 'IMG') {
+    window.open(event.target.src, '_blank', 'noopener');
+  }
+};
+
 const canManage = comment =>
   comment.author_id === currentUser.value.id || props.isOwner;
 
@@ -133,7 +140,8 @@ const remove = comment =>
         </div>
         <!-- eslint-disable-next-line vue/no-v-html -->
         <div
-          class="text-sm prose-sm text-n-slate-12 max-w-none"
+          class="text-sm prose-sm text-n-slate-12 max-w-none [&_img]:max-h-32 [&_img]:w-auto [&_img]:rounded [&_img]:cursor-zoom-in [&_img]:my-1"
+          @click="openImageInNewTab"
           v-html="formatMessage(comment.content, false, false)"
         />
       </li>
