@@ -114,6 +114,16 @@ const clearDueDate = () => {
   showDueDate.value = false;
 };
 
+// Clicking an image in the description opens it full-size; clicking text edits.
+const onDescriptionClick = event => {
+  if (event.target.tagName === 'IMG') {
+    event.stopPropagation();
+    window.open(event.target.src, '_blank', 'noopener');
+    return;
+  }
+  activeEditor.value = 'description';
+};
+
 const open = () => dialogRef.value?.open();
 defineExpose({ open });
 
@@ -335,9 +345,9 @@ const remove = async () => {
               <!-- eslint-disable-next-line vue/no-v-html -->
               <div
                 ref="descriptionRef"
-                class="px-3 py-2 text-xs prose-sm leading-relaxed rounded-lg cursor-text text-n-slate-12 max-w-none bg-n-alpha-black1 hover:bg-n-alpha-black2"
+                class="px-3 py-2 text-xs prose-sm leading-relaxed rounded-lg cursor-text text-n-slate-12 max-w-none bg-n-alpha-black1 hover:bg-n-alpha-black2 [&_img]:max-h-32 [&_img]:w-auto [&_img]:rounded [&_img]:cursor-zoom-in [&_img]:my-1"
                 :class="descriptionExpanded ? '' : 'max-h-40 overflow-hidden'"
-                @click="activeEditor = 'description'"
+                @click="onDescriptionClick"
                 v-html="formatMessage(form.description, false, false)"
               />
               <button
