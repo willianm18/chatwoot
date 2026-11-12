@@ -381,7 +381,7 @@ const remove = async () => {
           />
 
           <div
-            class="flex items-center justify-between pt-3 mt-2 border-t shrink-0 border-n-weak"
+            class="flex items-center justify-between pt-3 mt-auto border-t shrink-0 border-n-weak"
           >
             <button
               v-if="card"
