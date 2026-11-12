@@ -4,6 +4,7 @@ import { format, parseISO } from 'date-fns';
 import { useStore, useMapGetter } from 'dashboard/composables/store';
 import { useI18n } from 'vue-i18n';
 import FullEditor from 'dashboard/components/widgets/WootWriter/FullEditor.vue';
+import Icon from 'dashboard/components-next/icon/Icon.vue';
 import { ARTICLE_EDITOR_MENU_OPTIONS } from 'dashboard/constants/editor';
 import { useMessageFormatter } from 'shared/composables/useMessageFormatter';
 
@@ -104,9 +105,13 @@ const remove = comment =>
       <button
         v-else
         type="button"
-        class="w-full px-3 py-2.5 text-sm rounded-lg text-start text-n-slate-11 bg-n-alpha-black2 border border-n-strong hover:bg-n-alpha-black3"
+        class="flex items-center w-full gap-2 px-3 py-2.5 text-sm border rounded-lg text-start text-n-slate-11 bg-n-alpha-black2 border-n-strong hover:bg-n-alpha-black3 hover:text-n-slate-12"
         @click="emit('activate')"
       >
+        <Icon
+          icon="i-lucide-message-square-plus"
+          class="size-4 text-n-slate-10"
+        />
         {{ t('KANBAN.COMMENTS.PLACEHOLDER') }}
       </button>
     </div>
