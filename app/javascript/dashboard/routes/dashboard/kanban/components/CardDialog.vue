@@ -151,7 +151,7 @@ const remove = async () => {
     :show-confirm-button="false"
     :show-cancel-button="false"
   >
-    <div class="flex flex-col h-full">
+    <div class="flex flex-col">
       <div class="flex flex-col gap-2 mb-3 shrink-0">
         <span
           v-if="columnName"
@@ -195,10 +195,10 @@ const remove = async () => {
         </button>
       </div>
 
-      <div class="flex flex-col flex-1 gap-6 min-h-0 md:flex-row">
+      <div class="flex flex-col gap-6 md:h-[70vh] md:flex-row">
         <!-- Left column: card (scrolls on its own) -->
         <div
-          class="flex flex-col flex-1 min-w-0 gap-4 md:overflow-y-auto md:min-h-0 md:border-e md:border-n-weak md:pe-6"
+          class="flex flex-col flex-1 min-w-0 gap-4 md:overflow-y-auto md:min-h-0 md:pe-6 md:border-e md:border-n-weak"
         >
           <section class="flex flex-col gap-2">
             <h4 class="text-xs font-medium uppercase text-n-slate-10">
@@ -285,7 +285,7 @@ const remove = async () => {
               v-if="showDueDate && !form.due_date"
               v-model="form.due_date"
               type="date"
-              class="self-start px-3 py-2 text-sm border rounded-lg border-n-weak bg-n-alpha-black1 text-n-slate-12"
+              class="self-start w-auto px-3 py-2 text-sm border rounded-lg reset-base border-n-weak bg-n-alpha-black1 text-n-slate-12"
             />
             <span
               v-else-if="form.due_date"
@@ -395,7 +395,7 @@ const remove = async () => {
         <!-- Right column: comments (scrolls on its own) -->
         <div
           v-if="liveCard"
-          class="flex flex-col min-w-0 min-h-0 shrink-0 md:w-96"
+          class="flex flex-col min-w-0 shrink-0 md:w-96 md:min-h-0"
         >
           <CardComments
             :board-id="boardId"
