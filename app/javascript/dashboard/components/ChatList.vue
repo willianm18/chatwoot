@@ -1027,8 +1027,12 @@ watch(assigneeTabItems, items => {
 watch(
   () => props.archived,
   isArchived => {
-    if (isArchived && activeAssigneeTab.value !== ARCHIVED_TAB) {
-      updateAssigneeTab(ARCHIVED_TAB);
+    // Dashboard's <router-view> has no :key, so ConversationView is reused when navigating between
+    // the archived route and a normal conversations route. Sync both directions: without the else
+    // the tab would stay stuck on Archived after leaving the archived view (reachable via the sidebar).
+    const target = isArchived ? ARCHIVED_TAB : wootConstants.ASSIGNEE_TYPE.ME;
+    if (activeAssigneeTab.value !== target) {
+      updateAssigneeTab(target);
     }
   }
 );
