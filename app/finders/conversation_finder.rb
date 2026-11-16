@@ -167,7 +167,9 @@ class ConversationFinder
   end
 
   def filter_by_archived
-    archived = ActiveModel::Type::Boolean.new.cast(params[:archived])
+    # cast(nil) is nil, and the column is NOT NULL, so an absent param must fall back to false:
+    # `where(custom_archived: nil)` would match no rows and empty every normal tab.
+    archived = ActiveModel::Type::Boolean.new.cast(params[:archived]) || false
     @conversations = @conversations.where(custom_archived: archived)
   end
 

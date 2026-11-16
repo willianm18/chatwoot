@@ -438,8 +438,14 @@ describe ConversationFinder do
         create(:conversation, account: account, inbox: inbox, assignee: user_1, custom_archived: true)
       end
 
-      it 'excludes archived conversations from the normal list' do
+      it 'keeps non-archived conversations in the normal list and excludes archived ones' do
+        non_archived = create(:conversation, account: account, inbox: inbox, assignee: user_1, custom_archived: false)
+
         result = described_class.new(user_1, { assignee_type: 'me', status: 'all' }).perform
+
+        # Assert the non-archived one is present too: an empty list would otherwise pass the
+        # exclusion check vacuously (cast(nil) once narrowed every normal tab to custom_archived: nil).
+        expect(result[:conversations]).to include(non_archived)
         expect(result[:conversations]).not_to include(archived_conversation)
       end
 
