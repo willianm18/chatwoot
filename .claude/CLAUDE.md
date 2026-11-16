@@ -333,6 +333,36 @@ fluxo da skill `sync-fork` não se aplicam como estão.
   (`specs/2026-11-16-archived-conversations-design.md`, `plans/2026-11-16-archived-conversations.md`).
   Reverter = dropar a coluna `custom_archived` (e a migration), reverter as edições nos arquivos upstream
   acima, apagar o controller e os arquivos novos.
+  - **v2 — posicionamento na sidebar + contagem real** (2026-11-16): `archived_count` global (ignora status e
+    atribuição) exposto pelo `ConversationFinder` e pelo `meta` da listagem; a 4ª aba da `ChatList` vira ícone
+    de arquivo (`i-lucide-archive`) com badge real (`archivedCount > 0`); a visão arquivadas manda
+    `status: undefined` e esconde o dropdown de status (a lista traz abertas e resolvidas juntas); prop `archived`
+    na rota força a aba sem depender de estado local; item **"Arquivadas"** adicionado ao submenu "Conversas"
+    da barra lateral com o mesmo badge. Edições mínimas no upstream:
+    - `app/finders/conversation_finder.rb` — `set_up` aplica status por **último** (depois dos demais filtros);
+      snapshot `@archived_count_scope` antes do filtro de status/atribuição; método `archived_count` público
+      (aplica só `filter_by_archived(true)` sobre o snapshot); `archived_count` incluído no hash de contadores.
+    - `app/views/api/v1/conversations/meta.json.jbuilder` + `index.json.jbuilder` — `json.archived_count`.
+    - `app/javascript/dashboard/store/modules/conversationStats.js` — estado `archivedCount` lido da mutation
+      `SET_CONV_TAB_META`.
+    - `app/javascript/dashboard/components/ui/Tabs/TabsItem.vue` — prop `icon` opcional (string, default `''`);
+      quando preenchida, renderiza um `<span>` com o ícone no lugar do nome (aditivo, sem quebrar abas existentes).
+    - `app/javascript/dashboard/components/widgets/ChatTypeTabs.vue` — repassa as props `icon` e `show-badge`
+      para o `TabsItem`.
+    - `app/javascript/dashboard/components/ChatList.vue` — aba arquivadas usa `icon="i-lucide-archive"` e
+      `showBadge: archivedCount > 0`; visão arquivadas passa `status: undefined` e esconde o filtro de status;
+      prop `archived` (booleana, via rota) forçando a aba + watch bidirecional (sair da visão reseta a aba, pois
+      o `ConversationView` é reusado sem `:key`).
+    - `app/javascript/dashboard/routes/dashboard/conversation/conversation.routes.js` — rotas
+      `conversation_archived` e `conversation_through_archived`; `ConversationView.vue` recebe e repassa a
+      prop `archived` para o `ChatList`.
+    - `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` — item "Arquivadas" no submenu
+      "Conversas" com badge do `archivedCount`.
+    i18n: chave `SIDEBAR.ARCHIVED_CONVERSATIONS` no overlay `fazer-ai/locale/<locale>/settings.json`
+    (en/pt_BR/es). Design/plano v2 em `docs/superpowers/`
+    (`specs/2026-11-16-archived-v2-placement-design.md`, `plans/2026-11-16-archived-v2-placement.md`).
+    Reverter = tirar a prop `icon`, as rotas v2, o item da sidebar, `archived_count` do finder/meta/store e a
+    independência de status (a v1 segue funcionando).
 
 ## Gotchas conhecidos do fork
 
