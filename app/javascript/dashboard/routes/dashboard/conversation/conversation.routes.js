@@ -233,5 +233,24 @@ export default {
         conversationType: 'participating',
       }),
     },
+    {
+      path: frontendURL('accounts/:accountId/archived/conversations'),
+      name: 'conversation_archived',
+      meta: { permissions: CONVERSATION_PERMISSIONS },
+      component: ConversationView,
+      props: () => ({ archived: true }),
+    },
+    {
+      path: frontendURL(
+        'accounts/:accountId/archived/conversations/:conversationId'
+      ),
+      name: 'conversation_through_archived',
+      meta: { permissions: CONVERSATION_PERMISSIONS },
+      component: ConversationView,
+      props: route => ({
+        conversationId: route.params.conversationId,
+        archived: true,
+      }),
+    },
   ],
 };

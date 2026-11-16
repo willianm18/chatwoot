@@ -17,6 +17,7 @@ const props = defineProps({
   foldersId: { type: [String, Number], default: 0 },
   showAssignee: { type: Boolean, default: false },
   showExpanded: { type: Boolean, default: false },
+  archived: { type: Boolean, default: false },
 });
 
 const router = useRouter();
@@ -123,6 +124,7 @@ const conversationPath = computed(() =>
       teamId: props.teamId,
       conversationType: props.conversationType,
       foldersId: props.foldersId,
+      archived: props.archived,
     })
   )
 );

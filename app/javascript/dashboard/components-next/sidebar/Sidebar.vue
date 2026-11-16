@@ -253,6 +253,7 @@ const participatingUnreadCount = useMapGetter(
 const unattendedUnreadCount = useMapGetter(
   'conversationUnreadCounts/getUnattendedUnreadCount'
 );
+const conversationStats = useMapGetter('conversationStats/getStats');
 const getFolderUnreadCount = useMapGetter(
   'conversationUnreadCounts/getFolderUnreadCount'
 );
@@ -436,6 +437,14 @@ const menuItems = computed(() => {
             ? unattendedUnreadCount.value
             : 0,
           to: accountScopedRoute('conversation_unattended'),
+        },
+        {
+          name: 'Archived',
+          activeOn: ['conversation_through_archived'],
+          label: t('SIDEBAR.ARCHIVED_CONVERSATIONS'),
+          icon: 'i-lucide-archive',
+          badgeCount: conversationStats.value.archivedCount || 0,
+          to: accountScopedRoute('conversation_archived'),
         },
         {
           name: 'Folders',

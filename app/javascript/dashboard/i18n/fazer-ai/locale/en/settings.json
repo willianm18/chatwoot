@@ -53,7 +53,8 @@
     "INTERNAL_CHAT": "Internal Chat",
     "KANBAN": "Kanban",
     "APPS": "Apps",
-    "PANEL": "Panel"
+    "PANEL": "Panel",
+    "ARCHIVED_CONVERSATIONS": "Archived"
   },
   "KEYBOARD_SHORTCUTS": {
     "TITLE": {

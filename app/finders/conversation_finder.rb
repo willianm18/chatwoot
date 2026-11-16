@@ -25,7 +25,11 @@ class ConversationFinder
 
     mine_count, unassigned_count, all_count = set_count_for_all_conversations
     assigned_count = all_count - unassigned_count
+    archived = archived_count
 
+    # The archived list is status-independent: swap back to the pre-status scope before narrowing
+    # to archived. Counts above were already taken over the status-filtered scope, so the badges stay correct.
+    @conversations = @archived_count_scope if filter_archived?
     filter_by_archived
     filter_by_assignee_type
 
@@ -35,7 +39,8 @@ class ConversationFinder
         mine_count: mine_count,
         assigned_count: assigned_count,
         unassigned_count: unassigned_count,
-        all_count: all_count
+        all_count: all_count,
+        archived_count: archived
       }
     }
   end
@@ -51,7 +56,8 @@ class ConversationFinder
         mine_count: mine_count,
         assigned_count: assigned_count,
         unassigned_count: unassigned_count,
-        all_count: all_count
+        all_count: all_count,
+        archived_count: archived_count
       }
     }
   end
@@ -80,12 +86,15 @@ class ConversationFinder
     set_assignee_type
 
     find_all_conversations
-    filter_by_status unless params[:q]
     filter_by_group_type
     filter_by_team
     filter_by_labels
     filter_by_query
     filter_by_source_id
+    # Snapshot before status: archived_count and the archived list ignore status (archived is a
+    # bucket of its own), while mine/unassigned/all keep respecting it.
+    @archived_count_scope = @conversations
+    filter_by_status unless params[:q]
   end
 
   def set_inboxes
@@ -166,11 +175,16 @@ class ConversationFinder
                                   .where(messages: { message_type: allowed_message_types })
   end
 
+  def filter_archived?
+    ActiveModel::Type::Boolean.new.cast(params[:archived]) || false
+  end
+
+  def archived_count
+    @archived_count_scope.where(custom_archived: true).count
+  end
+
   def filter_by_archived
-    # cast(nil) is nil, and the column is NOT NULL, so an absent param must fall back to false:
-    # `where(custom_archived: nil)` would match no rows and empty every normal tab.
-    archived = ActiveModel::Type::Boolean.new.cast(params[:archived]) || false
-    @conversations = @conversations.where(custom_archived: archived)
+    @conversations = @conversations.where(custom_archived: filter_archived?)
   end
 
   def filter_by_status

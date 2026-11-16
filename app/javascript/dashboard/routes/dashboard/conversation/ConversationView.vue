@@ -62,6 +62,10 @@ export default {
       type: [String, Number],
       default: 0,
     },
+    archived: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup() {
     const { uiSettings, updateUISettings, isOnExpandedLayout } =
@@ -273,6 +277,7 @@ export default {
       :team-id="teamId"
       :conversation-type="conversationType"
       :folders-id="foldersId"
+      :archived="archived"
       :is-on-expanded-layout="isOnExpandedLayout"
       @conversation-load="onConversationLoad"
     />

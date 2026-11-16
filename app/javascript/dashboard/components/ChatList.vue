@@ -76,6 +76,7 @@ const props = defineProps({
   foldersId: { type: [String, Number], default: 0 },
   showConversationList: { default: true, type: Boolean },
   isOnExpandedLayout: { default: false, type: Boolean },
+  archived: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(['conversationLoad']);
@@ -91,7 +92,9 @@ const resolveAttributesModalRef = ref(null);
 
 const ARCHIVED_TAB = 'archived';
 
-const activeAssigneeTab = ref(wootConstants.ASSIGNEE_TYPE.ME);
+const activeAssigneeTab = ref(
+  props.archived ? ARCHIVED_TAB : wootConstants.ASSIGNEE_TYPE.ME
+);
 const activeStatus = ref(wootConstants.STATUS_TYPE.OPEN);
 const activeSortBy = ref(wootConstants.SORT_BY_TYPE.LAST_ACTIVITY_AT_DESC);
 const activeGroupType = ref('');
@@ -219,6 +222,10 @@ const assigneeTabPermissions = computed(() => {
   });
 });
 
+const archivedCount = computed(
+  () => conversationStats.value.archivedCount || 0
+);
+
 const assigneeTabItems = computed(() => {
   const items = filterItemsByPermission(
     assigneeTabPermissions.value,
@@ -230,11 +237,13 @@ const assigneeTabItems = computed(() => {
     count: conversationStats.value[countKey] || 0,
   }));
 
-  // Aba "Arquivadas": ortogonal ao assignee, sem badge de contagem (YAGNI).
+  // Aba "Arquivadas": ícone com contagem real; badge só quando > 0.
   items.push({
     key: ARCHIVED_TAB,
     name: t('CHAT_LIST.ASSIGNEE_TYPE_TABS.ARCHIVED'),
-    count: undefined,
+    icon: 'i-lucide-archive',
+    count: archivedCount.value,
+    showBadge: archivedCount.value > 0,
   });
 
   return items;
@@ -321,6 +330,8 @@ const conversationFilters = computed(() => {
     archived: activeAssigneeTab.value === ARCHIVED_TAB ? true : undefined,
   };
 });
+
+const isArchivedView = computed(() => activeAssigneeTab.value === ARCHIVED_TAB);
 
 const activeTeam = computed(() => {
   if (props.teamId) {
@@ -1012,6 +1023,19 @@ watch(assigneeTabItems, items => {
   }
 });
 
+watch(
+  () => props.archived,
+  isArchived => {
+    // Dashboard's <router-view> has no :key, so ConversationView is reused when navigating between
+    // the archived route and a normal conversations route. Sync both directions: without the else
+    // the tab would stay stuck on Archived after leaving the archived view (reachable via the sidebar).
+    const target = isArchived ? ARCHIVED_TAB : wootConstants.ASSIGNEE_TYPE.ME;
+    if (activeAssigneeTab.value !== target) {
+      updateAssigneeTab(target);
+    }
+  }
+);
+
 onBeforeUnmount(() => {
   if (presenceInterval) clearInterval(presenceInterval);
 });
@@ -1112,6 +1136,7 @@ watch(appliedFilters, () => resetBulkActions());
       :has-active-folders="hasActiveFolders"
       :can-manage-active-folder="canManageActiveFolder"
       :active-status="activeStatus"
+      :is-archived-view="isArchivedView"
       :is-on-expanded-layout="isOnExpandedLayout"
       :conversation-stats="conversationStats"
       :is-list-loading="chatListLoading && !conversationList.length"
@@ -1177,6 +1202,7 @@ watch(appliedFilters, () => resetBulkActions());
       :conversation-type="conversationType"
       :show-assignee="showAssigneeInConversationCard"
       :is-on-expanded-layout="isOnExpandedLayout"
+      :archived="isArchivedView"
       @load-more="loadMoreConversations"
     />
     <Dialog

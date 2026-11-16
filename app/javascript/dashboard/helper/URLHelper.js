@@ -11,6 +11,7 @@ export const conversationUrl = ({
   teamId,
   conversationType = '',
   foldersId,
+  archived = false,
 }) => {
   let url = `accounts/${accountId}/conversations/${id}`;
   if (activeInbox) {
@@ -27,6 +28,8 @@ export const conversationUrl = ({
     url = `accounts/${accountId}/participating/conversations/${id}`;
   } else if (conversationType === 'unattended') {
     url = `accounts/${accountId}/unattended/conversations/${id}`;
+  } else if (archived) {
+    url = `accounts/${accountId}/archived/conversations/${id}`;
   }
   return url;
 };
