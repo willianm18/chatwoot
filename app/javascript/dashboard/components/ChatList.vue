@@ -320,8 +320,7 @@ const conversationFilters = computed(() => {
     // infinite scroll re-fetched forever. The server's assignee filter ignores 'archived' anyway
     // (the archived tab is a flat list, narrowed by `archived`, not by assignee).
     assigneeType: activeAssigneeTab.value,
-    status:
-      activeAssigneeTab.value === ARCHIVED_TAB ? undefined : activeStatus.value,
+    status: activeStatus.value,
     sortBy: activeSortBy.value,
     page: conversationListPagination.value,
     labels: props.label ? [props.label] : undefined,
@@ -1203,6 +1202,7 @@ watch(appliedFilters, () => resetBulkActions());
       :conversation-type="conversationType"
       :show-assignee="showAssigneeInConversationCard"
       :is-on-expanded-layout="isOnExpandedLayout"
+      :archived="isArchivedView"
       @load-more="loadMoreConversations"
     />
     <Dialog
