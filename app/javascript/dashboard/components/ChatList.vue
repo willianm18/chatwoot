@@ -296,7 +296,10 @@ const conversationListPagination = computed(() => {
     return 1;
   }
 
-  return currentPage.value + 1;
+  // currentPage is undefined for a tab that has not loaded yet (e.g. Archived, whose badge is 0 so
+  // the isUnderPerPage shortcut above does not apply); `undefined + 1` is NaN, which the API sends
+  // as `page=NaN` and the server reads as page 1, so pagination never advances. Fall back to 0.
+  return (currentPage.value || 0) + 1;
 });
 
 const conversationFilters = computed(() => {
