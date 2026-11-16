@@ -101,7 +101,13 @@
     },
     "CARD_CONTEXT_MENU": {
       "PIN": "Pin",
-      "UNPIN": "Unpin"
+      "UNPIN": "Unpin",
+      "ARCHIVE": "Archive",
+      "UNARCHIVE": "Unarchive"
+    },
+    "ARCHIVE": {
+      "ARCHIVED_SUCCESS": "Conversation archived",
+      "UNARCHIVED_SUCCESS": "Conversation unarchived"
     },
     "HISTORY_SYNC": {
       "BUTTON": "Load older messages",
