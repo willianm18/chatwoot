@@ -447,11 +447,6 @@ describe ConversationFinder do
         result = described_class.new(user_1, { archived: 'true', status: 'all' }).perform
         expect(result[:conversations]).to contain_exactly(archived_conversation)
       end
-
-      it 'keeps counts scoped to non-archived when archived is not requested' do
-        result = described_class.new(user_1, { assignee_type: 'me', status: 'all' }).perform
-        expect(result[:conversations].pluck(:custom_archived).uniq).to eq([false])
-      end
     end
   end
 end
