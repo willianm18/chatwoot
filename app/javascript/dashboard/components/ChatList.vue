@@ -219,7 +219,9 @@ const assigneeTabPermissions = computed(() => {
   });
 });
 
-const archivedCount = computed(() => conversationStats.value.archivedCount || 0);
+const archivedCount = computed(
+  () => conversationStats.value.archivedCount || 0
+);
 
 const assigneeTabItems = computed(() => {
   const items = filterItemsByPermission(
@@ -315,7 +317,8 @@ const conversationFilters = computed(() => {
     // infinite scroll re-fetched forever. The server's assignee filter ignores 'archived' anyway
     // (the archived tab is a flat list, narrowed by `archived`, not by assignee).
     assigneeType: activeAssigneeTab.value,
-    status: activeStatus.value,
+    status:
+      activeAssigneeTab.value === ARCHIVED_TAB ? undefined : activeStatus.value,
     sortBy: activeSortBy.value,
     page: conversationListPagination.value,
     labels: props.label ? [props.label] : undefined,
@@ -325,6 +328,8 @@ const conversationFilters = computed(() => {
     archived: activeAssigneeTab.value === ARCHIVED_TAB ? true : undefined,
   };
 });
+
+const isArchivedView = computed(() => activeAssigneeTab.value === ARCHIVED_TAB);
 
 const activeTeam = computed(() => {
   if (props.teamId) {
@@ -1116,6 +1121,7 @@ watch(appliedFilters, () => resetBulkActions());
       :has-active-folders="hasActiveFolders"
       :can-manage-active-folder="canManageActiveFolder"
       :active-status="activeStatus"
+      :is-archived-view="isArchivedView"
       :is-on-expanded-layout="isOnExpandedLayout"
       :conversation-stats="conversationStats"
       :is-list-loading="chatListLoading && !conversationList.length"
