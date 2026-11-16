@@ -41,8 +41,11 @@ RSpec.describe 'Conversation Custom Archive API', type: :request do
     end
 
     context 'when it is an authenticated agent with access to the conversation' do
-      it 'unarchives the conversation' do
+      it 'unarchives the conversation and broadcasts the update' do
         conversation.update!(custom_archived: true)
+
+        expect(Rails.configuration.dispatcher).to receive(:dispatch)
+          .with('conversation.updated', anything, anything).at_least(:once)
 
         delete api_v1_account_conversation_custom_archive_url(account_id: account.id, conversation_id: conversation.display_id),
                headers: agent.create_new_auth_token, as: :json
