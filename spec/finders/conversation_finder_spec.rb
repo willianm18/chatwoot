@@ -432,5 +432,26 @@ describe ConversationFinder do
         expect(result[:count][:all_count]).to eq 1
       end
     end
+
+    describe 'archived filtering' do
+      let!(:archived_conversation) do
+        create(:conversation, account: account, inbox: inbox, assignee: user_1, custom_archived: true)
+      end
+
+      it 'excludes archived conversations from the normal list' do
+        result = described_class.new(user_1, { assignee_type: 'me', status: 'all' }).perform
+        expect(result[:conversations]).not_to include(archived_conversation)
+      end
+
+      it 'returns only archived conversations when archived is true' do
+        result = described_class.new(user_1, { archived: 'true', status: 'all' }).perform
+        expect(result[:conversations]).to contain_exactly(archived_conversation)
+      end
+
+      it 'keeps counts scoped to non-archived when archived is not requested' do
+        result = described_class.new(user_1, { assignee_type: 'me', status: 'all' }).perform
+        expect(result[:conversations].pluck(:custom_archived).uniq).to eq([false])
+      end
+    end
   end
 end

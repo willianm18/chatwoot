@@ -79,6 +79,7 @@ class ConversationFinder
     set_assignee_type
 
     find_all_conversations
+    filter_by_archived
     filter_by_status unless params[:q]
     filter_by_group_type
     filter_by_team
@@ -163,6 +164,11 @@ class ConversationFinder
                                   .where(messages: { message_type: allowed_message_types }).includes(:messages)
                                   .where('messages.content ILIKE :search', search: "%#{params[:q]}%")
                                   .where(messages: { message_type: allowed_message_types })
+  end
+
+  def filter_by_archived
+    archived = ActiveModel::Type::Boolean.new.cast(params[:archived])
+    @conversations = @conversations.where(custom_archived: archived)
   end
 
   def filter_by_status
