@@ -101,6 +101,22 @@ const actionMenuItems = computed(() => {
     value: 'send_transcript',
   });
 
+  if (currentChat.value.custom_archived) {
+    items.push({
+      icon: 'i-lucide-archive-restore',
+      label: t('CONVERSATION.CARD_CONTEXT_MENU.UNARCHIVE'),
+      action: 'unarchive',
+      value: 'unarchive',
+    });
+  } else {
+    items.push({
+      icon: 'i-lucide-archive',
+      label: t('CONVERSATION.CARD_CONTEXT_MENU.ARCHIVE'),
+      action: 'archive',
+      value: 'archive',
+    });
+  }
+
   return items;
 });
 
@@ -117,6 +133,18 @@ const handleActionClick = ({ action }) => {
     togglePin();
   } else if (action === 'send_transcript') {
     toggleEmailModal();
+  } else if (action === 'archive') {
+    store.dispatch('toggleConversationArchived', {
+      conversationId: currentChat.value.id,
+      archived: true,
+    });
+    useAlert(t('CONVERSATION.ARCHIVE.ARCHIVED_SUCCESS'));
+  } else if (action === 'unarchive') {
+    store.dispatch('toggleConversationArchived', {
+      conversationId: currentChat.value.id,
+      archived: false,
+    });
+    useAlert(t('CONVERSATION.ARCHIVE.UNARCHIVED_SUCCESS'));
   }
 };
 
