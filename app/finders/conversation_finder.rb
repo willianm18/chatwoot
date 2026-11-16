@@ -26,6 +26,7 @@ class ConversationFinder
     mine_count, unassigned_count, all_count = set_count_for_all_conversations
     assigned_count = all_count - unassigned_count
 
+    filter_by_archived
     filter_by_assignee_type
 
     {
@@ -79,7 +80,6 @@ class ConversationFinder
     set_assignee_type
 
     find_all_conversations
-    filter_by_archived
     filter_by_status unless params[:q]
     filter_by_group_type
     filter_by_team
@@ -197,9 +197,10 @@ class ConversationFinder
   end
 
   def set_count_for_all_conversations
-    return legacy_count_for_all_conversations if @conversations.limit_value || @conversations.offset_value || @conversations.eager_loading?
+    non_archived = @conversations.where(custom_archived: false)
+    return legacy_count_for_all_conversations(non_archived) if non_archived.limit_value || non_archived.offset_value || non_archived.eager_loading?
 
-    counts = @conversations.unscope(:order).pick(
+    counts = non_archived.unscope(:order).pick(
       Arel.sql("COUNT(*) FILTER (WHERE assignee_id = #{current_user.id})"),
       Arel.sql('COUNT(*) FILTER (WHERE assignee_id IS NULL AND assignee_agent_bot_id IS NULL)'),
       Arel.sql('COUNT(*)')
@@ -207,11 +208,11 @@ class ConversationFinder
     counts || [0, 0, 0]
   end
 
-  def legacy_count_for_all_conversations
+  def legacy_count_for_all_conversations(non_archived = @conversations.where(custom_archived: false))
     [
-      @conversations.assigned_to(current_user).count,
-      @conversations.unassigned.count,
-      @conversations.count
+      non_archived.assigned_to(current_user).count,
+      non_archived.unassigned.count,
+      non_archived.count
     ]
   end
 

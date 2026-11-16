@@ -447,6 +447,27 @@ describe ConversationFinder do
         result = described_class.new(user_1, { archived: 'true', status: 'all' }).perform
         expect(result[:conversations]).to contain_exactly(archived_conversation)
       end
+
+      it 'returns non-archived counts even when the archived tab is active' do
+        # One extra non-archived conversation assigned to user_1 so counts are unambiguous
+        create(:conversation, account: account, inbox: inbox, assignee: user_1, custom_archived: false)
+
+        result = described_class.new(user_1, { archived: 'true', status: 'all' }).perform
+
+        # The list must contain only the archived conversation
+        expect(result[:conversations]).to contain_exactly(archived_conversation)
+
+        # Counts must reflect non-archived conversations (would be 1 if scoped to archived).
+        # Reference set routed through the same permission filter the finder uses.
+        visible_non_archived = Conversations::PermissionFilterService.new(
+          account.conversations.where(custom_archived: false), user_1, account
+        ).perform
+        expect(result[:count][:all_count]).to eq(visible_non_archived.count)
+        expect(result[:count][:all_count]).not_to eq(1)
+
+        # mine_count must not include the archived conversation
+        expect(result[:count][:mine_count]).to eq(visible_non_archived.where(assignee_id: user_1.id).count)
+      end
     end
   end
 end
