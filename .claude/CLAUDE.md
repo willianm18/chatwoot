@@ -300,6 +300,39 @@ fluxo da skill `sync-fork` não se aplicam como estão.
     `store/modules/custom/kanban.js`, `kanban.json` (chaves `ACTIONS.*`, `LABELS.*`, `ATTACHMENTS.ADD`; 3 locais).
     Sem schema/rota nova. Checklist ficou **fora** (fase própria). Design/plano em `docs/superpowers/`
     (`*-kanban-card-dialog-redesign*`). Reverter = reverter os arquivos editados e apagar o `LabelPicker`.
+- **Arquivar conversas** (`custom_archived` boolean em `conversations`) — flag compartilhada por conta,
+  independente do status da conversa (aberta, resolvida, pendente); conversas arquivadas somem das três abas
+  normais (Minhas/Não atribuídas/Todos) e aparecem apenas na nova aba **"Arquivadas"** da `ChatList`; mensagem
+  nova numa conversa arquivada **não** a reabre nem a tira de Arquivadas; os badges das abas normais contam
+  só não-arquivadas (`meta` deliberadamente sem `archived`). Tempo real via `conversation.updated` (campo em
+  `list_of_keys` do `Conversation`). Edições mínimas no upstream:
+  - `db/schema.rb` — coluna `custom_archived` (boolean, default false, not null) + índice parcial + versão
+    `2026_11_16_142827` (**um dev com Ruby roda `bundle exec rails db:migrate` e confere o schema regenerado**).
+  - `app/finders/conversation_finder.rb` — método `filter_by_archived` (escopo das 3 abas normais exclui
+    arquivadas; aba Arquivadas passa `archived: true`).
+  - `app/models/conversation.rb` — `custom_archived` em `list_of_keys` para o broadcast de `conversation.updated`.
+  - `app/views/api/v1/conversations/partials/_conversation.json.jbuilder` — `json.custom_archived`.
+  - `app/presenters/conversations/event_data_presenter.rb` — `custom_archived` em `push_data`.
+  - `config/routes.rb` — `resource :custom_archive` aninhado em conversas (create = arquivar, destroy =
+    desarquivar).
+  - `app/javascript/dashboard/api/inbox/conversation.js` — param `archived` no `get` + métodos `archive`/
+    `unarchive`; `meta` deliberadamente sem `archived`.
+  - `app/javascript/dashboard/store/modules/conversations/helpers.js` — `filterByArchived` em `applyPageFilters`.
+  - `app/javascript/dashboard/store/modules/conversations/actions.js` — action `toggleConversationArchived`.
+  - `app/javascript/dashboard/components/ChatList.vue` — 4ª aba "Arquivadas" + `archived` em
+    `conversationFilters`, `assigneeType=all` fixo na aba arquivadas + `provide` do flag para filhos.
+  - `app/javascript/dashboard/components/ConversationItem.vue` — `inject` + wiring do `archived`.
+  - `app/javascript/dashboard/components/widgets/conversation/contextMenu/Index.vue` — item
+    Arquivar/Desarquivar no menu de contexto do cartão.
+  - `app/javascript/dashboard/components/widgets/conversation/MoreActions.vue` — item no menu de mais ações
+    do cabeçalho da conversa aberta.
+  Arquivos novos (nossos): `db/migrate/20261116142827_add_custom_archived_to_conversations.rb`,
+  `app/controllers/api/v1/accounts/conversations/custom_archives_controller.rb`, i18n no overlay
+  `fazer-ai/locale/<locale>/chatlist.json` (aba "Arquivadas") e `conversation.json` (ações de arquivar/
+  desarquivar). Specs de backend só na CI. Design/plano em `docs/superpowers/`
+  (`specs/2026-11-16-archived-conversations-design.md`, `plans/2026-11-16-archived-conversations.md`).
+  Reverter = dropar a coluna `custom_archived` (e a migration), reverter as edições nos arquivos upstream
+  acima, apagar o controller e os arquivos novos.
 
 ## Gotchas conhecidos do fork
 
