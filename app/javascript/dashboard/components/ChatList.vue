@@ -302,12 +302,12 @@ const conversationListPagination = computed(() => {
 const conversationFilters = computed(() => {
   return {
     inboxId: props.conversationInbox ? props.conversationInbox : undefined,
-    // The archived tab is orthogonal to assignee; send 'all' so the server's assignee filter
-    // is an explicit no-op instead of relying on an unknown value falling through.
-    assigneeType:
-      activeAssigneeTab.value === ARCHIVED_TAB
-        ? wootConstants.ASSIGNEE_TYPE.ALL
-        : activeAssigneeTab.value,
+    // Send the active tab verbatim, archived included. assigneeType is also the key the store files
+    // page/end-reached under (buildConversationList), and the list reads it back by the active tab;
+    // sending 'all' for archived split those keys so end-reached was never seen there and the
+    // infinite scroll re-fetched forever. The server's assignee filter ignores 'archived' anyway
+    // (the archived tab is a flat list, narrowed by `archived`, not by assignee).
+    assigneeType: activeAssigneeTab.value,
     status: activeStatus.value,
     sortBy: activeSortBy.value,
     page: conversationListPagination.value,
