@@ -36,6 +36,8 @@ const assignPriority = inject('assignPriority');
 const togglePin = inject('togglePin');
 const isConversationSelected = inject('isConversationSelected');
 const deleteConversation = inject('deleteConversation');
+const archiveConversation = inject('archiveConversation');
+const unarchiveConversation = inject('unarchiveConversation');
 
 // --- Context menu state (shared by both layouts) ---
 const showContextMenu = ref(false);
@@ -213,6 +215,15 @@ const onTogglePin = () => {
   togglePin(props.source.id);
   closeContextMenu();
 };
+
+const onToggleArchived = () => {
+  if (props.source.custom_archived) {
+    unarchiveConversation(props.source.id);
+  } else {
+    archiveConversation(props.source.id);
+  }
+  closeContextMenu();
+};
 </script>
 
 <template>
@@ -269,6 +280,7 @@ const onTogglePin = () => {
       :chat-id="source.id"
       :has-unread-messages="source.unread_count > 0"
       :is-pinned="isPinned(source.id)"
+      :is-archived="source.custom_archived"
       :conversation-labels="source.labels"
       :conversation-url="conversationPath"
       @update-conversation="onUpdateConversation"
@@ -280,6 +292,7 @@ const onTogglePin = () => {
       @mark-as-read="onMarkAsRead"
       @toggle-pin="onTogglePin"
       @assign-priority="onAssignPriority"
+      @toggle-archived="onToggleArchived"
       @delete-conversation="onDeleteConversation"
       @close="closeContextMenu"
     />

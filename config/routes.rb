@@ -228,6 +228,8 @@ Rails.application.routes.draw do
               resources :forwards, only: [:create] do
                 get :contacts, on: :collection
               end
+              # [fazer.ai fork] Archive/unarchive this conversation (account-wide, status-independent).
+              resource :custom_archive, only: [:create, :destroy], controller: 'custom_archives'
               resources :scheduled_messages, only: [:index, :create, :update, :destroy]
               resources :recurring_scheduled_messages, only: [:index, :create, :update, :destroy]
               resource :contact_info_request, only: [:show, :create]

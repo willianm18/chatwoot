@@ -1,9 +1,35 @@
 import { describe, it, expect } from 'vitest';
 import {
+  applyPageFilters,
   applyRoleFilter,
   isStaleConversation,
   sortComparator,
 } from '../helpers';
+
+describe('#applyPageFilters archived', () => {
+  const base = { status: 'open', inbox_id: 1, labels: [], meta: {} };
+
+  it('hides archived conversations by default', () => {
+    const conv = { ...base, custom_archived: true };
+    expect(applyPageFilters(conv, { status: 'open' })).toBe(false);
+  });
+
+  it('keeps non-archived conversations by default', () => {
+    const conv = { ...base, custom_archived: false };
+    expect(applyPageFilters(conv, { status: 'open' })).toBe(true);
+  });
+
+  it('shows only archived when archived filter is true', () => {
+    const archived = { ...base, custom_archived: true };
+    const normal = { ...base, custom_archived: false };
+    expect(applyPageFilters(archived, { status: 'open', archived: true })).toBe(
+      true
+    );
+    expect(applyPageFilters(normal, { status: 'open', archived: true })).toBe(
+      false
+    );
+  });
+});
 
 describe('Conversation Helpers', () => {
   describe('#isStaleConversation', () => {

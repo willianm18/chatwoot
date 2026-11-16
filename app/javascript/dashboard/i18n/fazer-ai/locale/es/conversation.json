@@ -101,7 +101,13 @@
     },
     "CARD_CONTEXT_MENU": {
       "PIN": "Fijar",
-      "UNPIN": "Dejar de fijar"
+      "UNPIN": "Dejar de fijar",
+      "ARCHIVE": "Archivar",
+      "UNARCHIVE": "Desarchivar"
+    },
+    "ARCHIVE": {
+      "ARCHIVED_SUCCESS": "Conversación archivada",
+      "UNARCHIVED_SUCCESS": "Conversación desarchivada"
     },
     "HISTORY_SYNC": {
       "BUTTON": "Cargar mensajes más antiguos",

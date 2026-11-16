@@ -89,6 +89,8 @@ const { buildConversationPath, buildConversationListPath } =
 
 const resolveAttributesModalRef = ref(null);
 
+const ARCHIVED_TAB = 'archived';
+
 const activeAssigneeTab = ref(wootConstants.ASSIGNEE_TYPE.ME);
 const activeStatus = ref(wootConstants.STATUS_TYPE.OPEN);
 const activeSortBy = ref(wootConstants.SORT_BY_TYPE.LAST_ACTIVITY_AT_DESC);
@@ -218,7 +220,7 @@ const assigneeTabPermissions = computed(() => {
 });
 
 const assigneeTabItems = computed(() => {
-  return filterItemsByPermission(
+  const items = filterItemsByPermission(
     assigneeTabPermissions.value,
     userPermissions.value,
     item => item.permissions
@@ -227,6 +229,15 @@ const assigneeTabItems = computed(() => {
     name: t(`CHAT_LIST.ASSIGNEE_TYPE_TABS.${key}`),
     count: conversationStats.value[countKey] || 0,
   }));
+
+  // Aba "Arquivadas": ortogonal ao assignee, sem badge de contagem (YAGNI).
+  items.push({
+    key: ARCHIVED_TAB,
+    name: t('CHAT_LIST.ASSIGNEE_TYPE_TABS.ARCHIVED'),
+    count: undefined,
+  });
+
+  return items;
 });
 
 const showAssigneeInConversationCard = computed(() => {
@@ -291,7 +302,12 @@ const conversationListPagination = computed(() => {
 const conversationFilters = computed(() => {
   return {
     inboxId: props.conversationInbox ? props.conversationInbox : undefined,
-    assigneeType: activeAssigneeTab.value,
+    // The archived tab is orthogonal to assignee; send 'all' so the server's assignee filter
+    // is an explicit no-op instead of relying on an unknown value falling through.
+    assigneeType:
+      activeAssigneeTab.value === ARCHIVED_TAB
+        ? wootConstants.ASSIGNEE_TYPE.ALL
+        : activeAssigneeTab.value,
     status: activeStatus.value,
     sortBy: activeSortBy.value,
     page: conversationListPagination.value,
@@ -299,6 +315,7 @@ const conversationFilters = computed(() => {
     teamId: props.teamId || undefined,
     conversationType: props.conversationType || undefined,
     groupType: activeGroupType.value || undefined,
+    archived: activeAssigneeTab.value === ARCHIVED_TAB ? true : undefined,
   };
 });
 
@@ -377,6 +394,7 @@ const conversationList = computed(() => {
     } else if (activeAssigneeTab.value === 'unassigned') {
       localConversationList = [...unAssignedChatsList.value(filters)];
     } else {
+      // all e archived: lista plana; o filtro archived vem de filters.archived
       localConversationList = [...allChatList.value(filters)];
     }
   } else {
@@ -1015,6 +1033,20 @@ const handleDelete = conversationId => {
   deleteConversationDialogRef.value.open();
 };
 
+const archiveConversation = conversationId => {
+  store.dispatch('toggleConversationArchived', {
+    conversationId,
+    archived: true,
+  });
+};
+
+const unarchiveConversation = conversationId => {
+  store.dispatch('toggleConversationArchived', {
+    conversationId,
+    archived: false,
+  });
+};
+
 provide('selectConversation', selectConversation);
 provide('deSelectConversation', deSelectConversation);
 provide('assignAgent', onAssignAgent);
@@ -1028,6 +1060,8 @@ provide('assignPriority', assignPriority);
 provide('togglePin', togglePin);
 provide('isConversationSelected', isConversationSelected);
 provide('deleteConversation', handleDelete);
+provide('archiveConversation', archiveConversation);
+provide('unarchiveConversation', unarchiveConversation);
 
 watch(activeTeam, () => resetAndFetchData());
 

@@ -26,6 +26,7 @@ class ConversationFinder
     mine_count, unassigned_count, all_count = set_count_for_all_conversations
     assigned_count = all_count - unassigned_count
 
+    filter_by_archived
     filter_by_assignee_type
 
     {
@@ -165,6 +166,13 @@ class ConversationFinder
                                   .where(messages: { message_type: allowed_message_types })
   end
 
+  def filter_by_archived
+    # cast(nil) is nil, and the column is NOT NULL, so an absent param must fall back to false:
+    # `where(custom_archived: nil)` would match no rows and empty every normal tab.
+    archived = ActiveModel::Type::Boolean.new.cast(params[:archived]) || false
+    @conversations = @conversations.where(custom_archived: archived)
+  end
+
   def filter_by_status
     return if params[:status] == 'all'
 
@@ -191,22 +199,18 @@ class ConversationFinder
   end
 
   def set_count_for_all_conversations
-    return legacy_count_for_all_conversations if @conversations.limit_value || @conversations.offset_value || @conversations.eager_loading?
+    non_archived = @conversations.where(custom_archived: false)
+    return legacy_count_for_all_conversations(non_archived) if non_archived.limit_value || non_archived.offset_value || non_archived.eager_loading?
 
-    counts = @conversations.unscope(:order).pick(
+    non_archived.unscope(:order).pick(
       Arel.sql("COUNT(*) FILTER (WHERE assignee_id = #{current_user.id})"),
       Arel.sql('COUNT(*) FILTER (WHERE assignee_id IS NULL AND assignee_agent_bot_id IS NULL)'),
       Arel.sql('COUNT(*)')
-    )
-    counts || [0, 0, 0]
+    ) || [0, 0, 0]
   end
 
-  def legacy_count_for_all_conversations
-    [
-      @conversations.assigned_to(current_user).count,
-      @conversations.unassigned.count,
-      @conversations.count
-    ]
+  def legacy_count_for_all_conversations(non_archived)
+    [non_archived.assigned_to(current_user).count, non_archived.unassigned.count, non_archived.count]
   end
 
   def current_page

@@ -3,6 +3,9 @@
     "TYPING": "digitando...",
     "RECORDING": "gravando...",
     "REACTED": "{sender} reagiu {emoji}",
-    "REACTED_TO_SNIPPET": "{sender} reagiu {emoji} a \"{snippet}\""
+    "REACTED_TO_SNIPPET": "{sender} reagiu {emoji} a \"{snippet}\"",
+    "ASSIGNEE_TYPE_TABS": {
+      "ARCHIVED": "Arquivadas"
+    }
   }
 }

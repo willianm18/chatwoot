@@ -962,6 +962,18 @@ const actions = {
     }
   },
 
+  // [fazer.ai fork] Arquiva/desarquiva a conversa. O servidor devolve a conversa atualizada
+  // (com custom_archived); `updateConversation` reaproveita o merge + re-filtro dos getters.
+  toggleConversationArchived: async (
+    { dispatch },
+    { conversationId, archived }
+  ) => {
+    const { data } = archived
+      ? await ConversationApi.archive(conversationId)
+      : await ConversationApi.unarchive(conversationId);
+    dispatch('updateConversation', data);
+  },
+
   ...messageReadActions,
   ...messageTranslateActions,
 };

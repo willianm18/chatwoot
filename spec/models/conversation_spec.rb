@@ -831,6 +831,7 @@ RSpec.describe Conversation do
         last_activity_at: conversation.last_activity_at.to_i,
         inbox_id: conversation.inbox_id,
         status: conversation.status,
+        custom_archived: conversation.custom_archived,
         contact_inbox: conversation.contact_inbox,
         timestamp: conversation.last_activity_at.to_i,
         can_reply: true,
