@@ -10,6 +10,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  icon: {
+    type: String,
+    default: '',
+  },
   disabled: {
     type: Boolean,
     default: false,
@@ -56,7 +60,8 @@ const onTabClick = event => {
       ]"
       @click="onTabClick"
     >
-      {{ name }}
+      <span v-if="icon" v-tooltip="name" :class="icon" class="size-4" />
+      <template v-else>{{ name }}</template>
       <div
         v-if="showBadge"
         class="rounded-full h-5 flex items-center justify-center text-xs font-medium my-0 ltr:ml-1 rtl:mr-1 px-1.5 py-0 min-w-[20px]"

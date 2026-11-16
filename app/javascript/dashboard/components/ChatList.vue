@@ -219,6 +219,8 @@ const assigneeTabPermissions = computed(() => {
   });
 });
 
+const archivedCount = computed(() => conversationStats.value.archivedCount || 0);
+
 const assigneeTabItems = computed(() => {
   const items = filterItemsByPermission(
     assigneeTabPermissions.value,
@@ -230,11 +232,13 @@ const assigneeTabItems = computed(() => {
     count: conversationStats.value[countKey] || 0,
   }));
 
-  // Aba "Arquivadas": ortogonal ao assignee, sem badge de contagem (YAGNI).
+  // Aba "Arquivadas": ícone com contagem real; badge só quando > 0.
   items.push({
     key: ARCHIVED_TAB,
     name: t('CHAT_LIST.ASSIGNEE_TYPE_TABS.ARCHIVED'),
-    count: undefined,
+    icon: 'i-lucide-archive',
+    count: archivedCount.value,
+    showBadge: archivedCount.value > 0,
   });
 
   return items;
