@@ -302,7 +302,12 @@ const conversationListPagination = computed(() => {
 const conversationFilters = computed(() => {
   return {
     inboxId: props.conversationInbox ? props.conversationInbox : undefined,
-    assigneeType: activeAssigneeTab.value,
+    // The archived tab is orthogonal to assignee; send 'all' so the server's assignee filter
+    // is an explicit no-op instead of relying on an unknown value falling through.
+    assigneeType:
+      activeAssigneeTab.value === ARCHIVED_TAB
+        ? wootConstants.ASSIGNEE_TYPE.ALL
+        : activeAssigneeTab.value,
     status: activeStatus.value,
     sortBy: activeSortBy.value,
     page: conversationListPagination.value,
