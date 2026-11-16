@@ -76,6 +76,7 @@ const props = defineProps({
   foldersId: { type: [String, Number], default: 0 },
   showConversationList: { default: true, type: Boolean },
   isOnExpandedLayout: { default: false, type: Boolean },
+  archived: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(['conversationLoad']);
@@ -91,7 +92,9 @@ const resolveAttributesModalRef = ref(null);
 
 const ARCHIVED_TAB = 'archived';
 
-const activeAssigneeTab = ref(wootConstants.ASSIGNEE_TYPE.ME);
+const activeAssigneeTab = ref(
+  props.archived ? ARCHIVED_TAB : wootConstants.ASSIGNEE_TYPE.ME
+);
 const activeStatus = ref(wootConstants.STATUS_TYPE.OPEN);
 const activeSortBy = ref(wootConstants.SORT_BY_TYPE.LAST_ACTIVITY_AT_DESC);
 const activeGroupType = ref('');
@@ -1020,6 +1023,15 @@ watch(assigneeTabItems, items => {
     updateAssigneeTab(wootConstants.ASSIGNEE_TYPE.ME);
   }
 });
+
+watch(
+  () => props.archived,
+  isArchived => {
+    if (isArchived && activeAssigneeTab.value !== ARCHIVED_TAB) {
+      updateAssigneeTab(ARCHIVED_TAB);
+    }
+  }
+);
 
 onBeforeUnmount(() => {
   if (presenceInterval) clearInterval(presenceInterval);
