@@ -22,8 +22,12 @@ describe('#applyPageFilters archived', () => {
   it('shows only archived when archived filter is true', () => {
     const archived = { ...base, custom_archived: true };
     const normal = { ...base, custom_archived: false };
-    expect(applyPageFilters(archived, { status: 'open', archived: true })).toBe(true);
-    expect(applyPageFilters(normal, { status: 'open', archived: true })).toBe(false);
+    expect(applyPageFilters(archived, { status: 'open', archived: true })).toBe(
+      true
+    );
+    expect(applyPageFilters(normal, { status: 'open', archived: true })).toBe(
+      false
+    );
   });
 });
 
