@@ -20,9 +20,17 @@ describe('#mutations', () => {
     });
 
     it('stores archivedCount from the meta payload', () => {
-      const state = { mineCount: 0, unAssignedCount: 0, allCount: 0, archivedCount: 0 };
+      const state = {
+        mineCount: 0,
+        unAssignedCount: 0,
+        allCount: 0,
+        archivedCount: 0,
+      };
       mutations[types.SET_CONV_TAB_META](state, {
-        mine_count: 1, unassigned_count: 2, all_count: 3, archived_count: 7,
+        mine_count: 1,
+        unassigned_count: 2,
+        all_count: 3,
+        archived_count: 7,
       });
       expect(state.archivedCount).toBe(7);
     });
