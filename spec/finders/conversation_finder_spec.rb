@@ -179,7 +179,8 @@ describe ConversationFinder do
                                        mine_count: 2,
                                        assigned_count: 4,
                                        unassigned_count: 1,
-                                       all_count: 5
+                                       all_count: 5,
+                                       archived_count: 0
                                      })
       end
     end
@@ -378,7 +379,8 @@ describe ConversationFinder do
                                        mine_count: 2,
                                        assigned_count: 3,
                                        unassigned_count: 1,
-                                       all_count: 4
+                                       all_count: 4,
+                                       archived_count: 0
                                      })
       end
 
@@ -473,6 +475,37 @@ describe ConversationFinder do
 
         # mine_count must not include the archived conversation
         expect(result[:count][:mine_count]).to eq(visible_non_archived.where(assignee_id: user_1.id).count)
+      end
+    end
+
+    describe 'archived view ignores status and archived_count' do
+      let!(:archived_open) do
+        create(:conversation, account: account, inbox: inbox, assignee: user_1, status: :open, custom_archived: true)
+      end
+      let!(:archived_resolved) do
+        create(:conversation, account: account, inbox: inbox, assignee: user_1, status: :resolved, custom_archived: true)
+      end
+
+      it 'returns archived conversations of any status, even with status=open' do
+        result = described_class.new(user_1, { archived: 'true', status: 'open' }).perform
+        expect(result[:conversations]).to contain_exactly(archived_open, archived_resolved)
+      end
+
+      it 'reports archived_count ignoring status' do
+        result = described_class.new(user_1, { assignee_type: 'me', status: 'open' }).perform
+        expect(result[:count][:archived_count]).to eq(2)
+      end
+
+      it 'keeps mine/all counts non-archived' do
+        non_archived = create(:conversation, account: account, inbox: inbox, assignee: user_1, status: :open,
+                                            custom_archived: false)
+        result = described_class.new(user_1, { assignee_type: 'me', status: 'open' }).perform
+        expect(result[:count][:all_count]).to eq(
+          Conversations::PermissionFilterService.new(
+            account.conversations.where(custom_archived: false, status: :open), user_1, account
+          ).perform.count
+        )
+        expect(result[:conversations]).to include(non_archived)
       end
     end
   end
