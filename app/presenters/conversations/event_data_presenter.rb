@@ -58,6 +58,7 @@ class Conversations::EventDataPresenter < SimpleDelegator
       labels: label_list,
       meta: push_meta,
       status: status,
+      custom_archived: custom_archived,
       custom_attributes: custom_attributes,
       snoozed_until: snoozed_until,
       unread_count: unread_incoming_messages.count,
