@@ -21,6 +21,7 @@ class ConversationApi extends ApiClient {
       sortBy,
       updatedWithin,
       groupType,
+      archived,
     },
     options = {}
   ) {
@@ -37,6 +38,7 @@ class ConversationApi extends ApiClient {
         sort_by: sortBy,
         updated_within: updatedWithin,
         group_type: groupType,
+        archived: archived || undefined,
       },
     });
   }
@@ -96,6 +98,15 @@ class ConversationApi extends ApiClient {
       params: { q: query },
       signal,
     });
+  }
+
+  // [fazer.ai fork] Archive/unarchive a conversation (account-wide, status-independent).
+  archive(conversationId) {
+    return axios.post(`${this.url}/${conversationId}/custom_archive`);
+  }
+
+  unarchive(conversationId) {
+    return axios.delete(`${this.url}/${conversationId}/custom_archive`);
   }
 
   togglePriority({ conversationId, priority }) {
