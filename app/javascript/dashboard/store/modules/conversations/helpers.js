@@ -78,6 +78,13 @@ export const filterByGroupType = (shouldFilter, groupType, chatGroupType) => {
   return groupType === chatGroupType && shouldFilter;
 };
 
+// Arquivadas só aparecem na aba "Arquivadas": por padrão somem das listas normais, e quando
+// `archived` é verdadeiro a lista passa a mostrar apenas as arquivadas.
+export const filterByArchived = (shouldFilter, archived, chatArchived) => {
+  const wantArchived = Boolean(archived);
+  return Boolean(chatArchived) === wantArchived && shouldFilter;
+};
+
 export const applyPageFilters = (conversation, filters) => {
   const {
     inboxId,
@@ -86,6 +93,7 @@ export const applyPageFilters = (conversation, filters) => {
     teamId,
     conversationType,
     groupType,
+    archived,
   } = filters;
   const {
     status: chatStatus,
@@ -95,6 +103,7 @@ export const applyPageFilters = (conversation, filters) => {
     first_reply_created_at: firstReplyOn,
     waiting_since: waitingSince,
     group_type: chatGroupType,
+    custom_archived: chatArchived,
   } = conversation;
   const team = meta.team || {};
   const { id: chatTeamId } = team;
@@ -110,6 +119,7 @@ export const applyPageFilters = (conversation, filters) => {
     firstReplyOn,
     waitingSince
   );
+  shouldFilter = filterByArchived(shouldFilter, archived, chatArchived);
 
   return shouldFilter;
 };
