@@ -75,6 +75,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    isArchived: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: [
     'updateConversation',
@@ -82,6 +86,7 @@ export default {
     'markAsUnread',
     'markAsRead',
     'togglePin',
+    'toggleArchived',
     'assignAgent',
     'assignTeam',
     'assignLabel',
@@ -184,6 +189,16 @@ export default {
         key: MENU.DELETE,
         icon: 'delete',
         label: this.$t('CONVERSATION.CARD_CONTEXT_MENU.DELETE'),
+      },
+      archiveOption: {
+        key: 'archive',
+        icon: 'archive',
+        label: this.$t('CONVERSATION.CARD_CONTEXT_MENU.ARCHIVE'),
+      },
+      unarchiveOption: {
+        key: 'unarchive',
+        icon: 'archive',
+        label: this.$t('CONVERSATION.CARD_CONTEXT_MENU.UNARCHIVE'),
       },
       openInNewTabOption: {
         key: MENU.OPEN_NEW_TAB,
@@ -459,6 +474,12 @@ export default {
         @click.stop="copyConversationLink"
       />
     </template>
+    <hr class="m-1 rounded border-b border-n-weak dark:border-n-weak" />
+    <MenuItem
+      :option="isArchived ? unarchiveOption : archiveOption"
+      variant="icon"
+      @click.stop="$emit('toggleArchived')"
+    />
     <template v-if="isAdmin && isAllowed([MENU.DELETE])">
       <hr class="m-1 rounded border-b border-n-weak dark:border-n-weak" />
       <MenuItem

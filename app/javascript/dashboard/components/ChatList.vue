@@ -1033,6 +1033,20 @@ const handleDelete = conversationId => {
   deleteConversationDialogRef.value.open();
 };
 
+const archiveConversation = conversationId => {
+  store.dispatch('toggleConversationArchived', {
+    conversationId,
+    archived: true,
+  });
+};
+
+const unarchiveConversation = conversationId => {
+  store.dispatch('toggleConversationArchived', {
+    conversationId,
+    archived: false,
+  });
+};
+
 provide('selectConversation', selectConversation);
 provide('deSelectConversation', deSelectConversation);
 provide('assignAgent', onAssignAgent);
@@ -1046,6 +1060,8 @@ provide('assignPriority', assignPriority);
 provide('togglePin', togglePin);
 provide('isConversationSelected', isConversationSelected);
 provide('deleteConversation', handleDelete);
+provide('archiveConversation', archiveConversation);
+provide('unarchiveConversation', unarchiveConversation);
 
 watch(activeTeam, () => resetAndFetchData());
 
